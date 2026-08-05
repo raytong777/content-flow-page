@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContentFlow — 内容生成工作流平台</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --text:#1a1a2e;
+  --text-secondary:#6b6880;
+  --text-tertiary:#9691ad;
+  --bg:#fff;
+  --bg-tint:#faf8ff;
+  --accent:#7e14ff;
+  --accent-bright:#863bff;
+  --accent-light:#ede6ff;
+  --accent-cyan:#47bfff;
+  --card-bg:#f8f5ff;
+  --card-border:rgba(126,20,255,.08);
+  --danger:#e11d48;
+  --radius:18px;
+  --radius-sm:12px;
+  --max-w:1120px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ===== Animated Background — Ink dots + Floating Text Lines ===== */
+.bg-dots{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(126,20,255,.08) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.bg-flow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-flow .line{position:absolute;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(126,20,255,.28),transparent);animation:line-drift linear infinite;opacity:.65}
+.bg-flow .line:nth-child(1){top:10%;width:180px;animation-duration:14s;animation-delay:0s}
+.bg-flow .line:nth-child(2){top:22%;width:120px;animation-duration:16s;animation-delay:-4s}
+.bg-flow .line:nth-child(3){top:37%;width:240px;animation-duration:12s;animation-delay:-2s}
+.bg-flow .line:nth-child(4){top:51%;width:160px;animation-duration:18s;animation-delay:-8s}
+.bg-flow .line:nth-child(5){top:64%;width:200px;animation-duration:15s;animation-delay:-5s}
+.bg-flow .line:nth-child(6){top:78%;width:140px;animation-duration:13s;animation-delay:-9s}
+.bg-flow .line:nth-child(7){top:88%;width:220px;animation-duration:17s;animation-delay:-3s}
+.bg-flow .line:nth-child(8){top:5%;width:100px;animation-duration:20s;animation-delay:-11s;background:linear-gradient(90deg,transparent,rgba(71,191,255,.32),transparent)}
+.bg-flow .line:nth-child(9){top:44%;width:160px;animation-duration:19s;animation-delay:-6s;background:linear-gradient(90deg,transparent,rgba(71,191,255,.28),transparent)}
+@keyframes line-drift{0%{left:-260px;opacity:0}12%{opacity:.65}88%{opacity:.65}100%{left:calc(100% + 20px);opacity:0}}
+
+.bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-glow .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.16;animation:orb-drift 22s ease-in-out infinite}
+.bg-glow .orb:nth-child(1){width:420px;height:420px;background:var(--accent);top:-120px;right:-100px}
+.bg-glow .orb:nth-child(2){width:320px;height:320px;background:var(--accent-cyan);bottom:-100px;left:-80px;animation-delay:-9s;animation-duration:26s}
+.bg-glow .orb:nth-child(3){width:260px;height:260px;background:var(--accent-bright);top:45%;left:55%;animation-delay:-13s;animation-duration:24s}
+@keyframes orb-drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.06)}66%{transform:translate(-22px,28px) scale(.94)}}
+
+section,.hero,footer{position:relative;z-index:1}
+
+/* ===== Layout ===== */
+section{padding:120px 40px}
+.container{max-width:var(--max-w);margin:0 auto}
+
+/* ===== Nav ===== */
+.nav{position:sticky;top:0;z-index:10;backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);background:rgba(255,255,255,.72);border-bottom:1px solid rgba(126,20,255,.06)}
+.nav-inner{max-width:var(--max-w);margin:0 auto;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--text);text-decoration:none}
+.nav-brand img{width:28px;height:28px}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:.9rem;color:var(--text-secondary);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-cta{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:980px;background:var(--accent-light);color:var(--accent);font-size:.88rem;font-weight:600;text-decoration:none;border:1px solid rgba(126,20,255,.18);transition:all .2s}
+.nav-cta:hover{background:rgba(126,20,255,.14);color:var(--accent);border-color:rgba(126,20,255,.32);transform:translateY(-1px)}
+
+/* ===== Hero ===== */
+.hero{min-height:92vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 40px 60px}
+.hero-logo{width:88px;height:88px;margin:0 auto 28px;filter:drop-shadow(0 12px 32px rgba(126,20,255,.28))}
+.hero h1{font-size:clamp(2.6rem,6.4vw,4.4rem);font-weight:700;letter-spacing:-.025em;line-height:1.1;margin-bottom:22px;background:linear-gradient(135deg,#1a1a2e 0%,#7e14ff 55%,#47bfff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .subtitle{font-size:clamp(1.05rem,2.2vw,1.35rem);color:var(--text-secondary);max-width:680px;margin:0 auto 20px;line-height:1.65}
+.hero .tagline{font-size:.95rem;color:var(--text-tertiary);margin-bottom:40px;letter-spacing:.02em}
+.hero .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:980px;font-size:1rem;font-weight:500;text-decoration:none;transition:all .2s;cursor:pointer;border:none}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 20px rgba(126,20,255,.28)}
+.btn-primary:hover{background:var(--accent-bright);transform:translateY(-1px);box-shadow:0 10px 28px rgba(126,20,255,.36)}
+.btn-ghost{background:transparent;color:var(--accent);border:1.5px solid rgba(126,20,255,.35)}
+.btn-ghost:hover{background:var(--accent-light);border-color:var(--accent)}
+
+/* ===== Section headings ===== */
+.section-label{display:inline-block;padding:4px 12px;border-radius:20px;background:var(--accent-light);color:var(--accent);font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.section-title{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:18px}
+.section-desc{font-size:1.05rem;color:var(--text-secondary);max-width:640px;line-height:1.7}
+.section-head{text-align:center;margin-bottom:56px}
+.section-head .section-desc{margin:0 auto}
+
+/* ===== Pain points ===== */
+.pain-intro{background:linear-gradient(135deg,rgba(126,20,255,.04) 0%,rgba(71,191,255,.04) 100%);border:1px solid var(--card-border);border-radius:var(--radius);padding:36px 40px;margin-bottom:48px;position:relative}
+.pain-intro::before{content:'"';position:absolute;top:-8px;left:24px;font-size:5rem;color:var(--accent);opacity:.15;font-family:Georgia,serif;line-height:1}
+.pain-intro p{font-size:1.05rem;line-height:1.85;color:var(--text);margin:0}
+.pain-intro strong{color:var(--accent);font-weight:600}
+
+.pain-list{display:grid;grid-template-columns:1fr;gap:20px}
+.pain-item{display:grid;grid-template-columns:64px 1fr 1fr;gap:32px;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);padding:28px 32px;align-items:center;transition:all .25s}
+.pain-item:hover{border-color:rgba(126,20,255,.25);box-shadow:0 8px 28px rgba(126,20,255,.08);transform:translateY(-2px)}
+.pain-num{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-bright));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;font-family:Georgia,serif;box-shadow:0 6px 18px rgba(126,20,255,.28)}
+.pain-body h4{font-size:1.05rem;font-weight:600;margin-bottom:6px;color:var(--text)}
+.pain-body p{font-size:.92rem;color:var(--text-secondary);line-height:1.6}
+.pain-solve{padding-left:32px;border-left:2px dashed rgba(126,20,255,.25);position:relative}
+.pain-solve::before{content:'→';position:absolute;left:-14px;top:50%;transform:translateY(-50%);background:#fff;color:var(--accent);font-weight:700;padding:2px 4px}
+.pain-solve .solve-label{font-size:.72rem;color:var(--accent);font-weight:600;letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase}
+.pain-solve h4{font-size:1.05rem;font-weight:600;margin-bottom:6px;color:var(--text)}
+.pain-solve p{font-size:.92rem;color:var(--text-secondary);line-height:1.6}
+
+/* ===== Features grid ===== */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.feature-card{background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);padding:32px 28px;transition:all .25s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-cyan));transform:translateY(-100%);transition:transform .3s}
+.feature-card:hover{transform:translateY(-4px);border-color:rgba(126,20,255,.25);box-shadow:0 14px 40px rgba(126,20,255,.1)}
+.feature-card:hover::before{transform:translateY(0)}
+.feature-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--accent-light),#fff);display:flex;align-items:center;justify-content:center;margin-bottom:20px;color:var(--accent)}
+.feature-icon svg{width:26px;height:26px}
+.feature-card h3{font-size:1.15rem;font-weight:600;margin-bottom:10px}
+.feature-card p{font-size:.94rem;color:var(--text-secondary);line-height:1.65}
+
+/* ===== Workflow ===== */
+.workflow-list{display:flex;flex-direction:column;gap:96px;margin-top:56px}
+.workflow-item{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.workflow-item:nth-child(even){direction:rtl}
+.workflow-item:nth-child(even)>*{direction:ltr}
+.workflow-media{border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#fff,var(--bg-tint));border:1px solid var(--card-border);aspect-ratio:16/10;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:0 12px 40px rgba(126,20,255,.08)}
+.workflow-media .placeholder{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--text-tertiary);padding:20px;text-align:center}
+.workflow-media .placeholder svg{width:52px;height:52px;color:var(--accent);opacity:.5}
+.workflow-media .placeholder .file{font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.82rem;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:6px}
+.workflow-media .placeholder .caption{font-size:.9rem;line-height:1.5;max-width:280px}
+.workflow-text .step-num{display:inline-flex;align-items:center;justify-content:center;padding:0 14px;height:32px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent-bright));color:#fff;font-size:.82rem;font-weight:600;margin-bottom:14px;letter-spacing:.04em}
+.workflow-text h3{font-size:1.5rem;font-weight:600;margin-bottom:12px;letter-spacing:-.01em}
+.workflow-text p{font-size:1rem;color:var(--text-secondary);line-height:1.8}
+.workflow-text .highlight{color:var(--accent);font-weight:500}
+.workflow-text ul{margin-top:14px;padding-left:0;list-style:none}
+.workflow-text li{font-size:.94rem;color:var(--text-secondary);padding:6px 0 6px 22px;position:relative;line-height:1.65}
+.workflow-text li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.6}
+
+/* ===== Author ===== */
+.author-section{background:linear-gradient(180deg,transparent,var(--bg-tint) 40%)}
+.author-card{display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:stretch;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden;box-shadow:0 12px 40px rgba(126,20,255,.08);margin-top:36px}
+.author-photo{width:100%;height:100%;min-height:400px;background:#e8e8ed;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.author-photo img{width:100%;height:100%;object-fit:cover}
+.author-photo .placeholder{color:var(--text-secondary);font-size:.9rem}
+.author-info{padding:40px 40px 40px 0}
+.author-info h2{font-size:2rem;font-weight:700;margin-bottom:4px;letter-spacing:-.01em}
+.author-info .en-name{font-size:1rem;color:var(--text-secondary);margin-bottom:18px}
+.author-tags{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+.tag{padding:6px 14px;border-radius:8px;font-size:.82rem;font-weight:600}
+.tag-purple{background:var(--accent-light);color:var(--accent)}
+.tag-green{background:#e6ffed;color:#1a7f37}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.info-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;font-size:.9rem;font-weight:500}
+.info-item .info-icon{font-size:1.1rem;flex-shrink:0}
+.info-item:nth-child(1){background:#fce7f3}
+.info-item:nth-child(2){background:#dbeafe}
+.info-item:nth-child(3){background:#ffedd5}
+.info-item:nth-child(4){background:#dcfce7}
+.hobby-title{font-size:1rem;font-weight:600;margin-bottom:12px}
+.hobby-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hobby-item{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:.85rem;font-weight:500}
+.hobby-item:nth-child(1){background:#fef08a}
+.hobby-item:nth-child(2){background:#a5f3fc}
+.hobby-item:nth-child(3){background:#e9d5ff}
+.hobby-item:nth-child(4){background:#bbf7d0}
+
+/* ===== Footer ===== */
+footer{text-align:center;padding:48px 40px;font-size:.85rem;color:var(--text-secondary);border-top:1px solid var(--card-border)}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* ===== Scroll Animations ===== */
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ===== Responsive ===== */
+@media(max-width:820px){
+  section{padding:80px 24px}
+  .nav-inner{padding:12px 24px}
+  .nav-links{display:none}
+  .pain-item{grid-template-columns:1fr;gap:14px;padding:24px}
+  .pain-solve{padding-left:0;border-left:none;border-top:2px dashed rgba(126,20,255,.25);padding-top:18px}
+  .pain-solve::before{display:none}
+  .workflow-item{grid-template-columns:1fr;gap:28px}
+  .workflow-item:nth-child(even){direction:ltr}
+  .author-card{grid-template-columns:1fr}
+  .author-photo{min-height:260px}
+  .author-info{padding:24px}
+  .info-grid,.hobby-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Animated Background ===== -->
+<div class="bg-dots"></div>
+<div class="bg-flow">
+  <div class="line"></div><div class="line"></div><div class="line"></div>
+  <div class="line"></div><div class="line"></div><div class="line"></div>
+  <div class="line"></div><div class="line"></div><div class="line"></div>
+</div>
+<div class="bg-glow">
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
+</div>
+
+<!-- ===== Nav ===== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand"><img src="favicon.svg" alt="ContentFlow">ContentFlow</a>
+    <div class="nav-links">
+      <a href="#pain">主要痛点</a>
+      <a href="#features">核心能力</a>
+      <a href="#workflow">工作流</a>
+      <a href="../ContentFlow-使用教程/index.html">使用教程</a>
+      <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="nav-cta">进入网页版 →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="container">
+    <img src="favicon.svg" alt="ContentFlow" class="hero-logo">
+    <h1>ContentFlow<br>内容生成工作流平台</h1>
+    <p class="subtitle">一站式解决内容创作中素材零散、思路发散的问题</p>
+    <p class="tagline">一键从模版搭骨架 · 素材节点绑定 · AI 逐章节生成 · 选区精准修改</p>
+    <div class="cta-row">
+      <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="btn btn-primary">在线体验 →</a>
+      <a href="#pain" class="btn btn-ghost">了解更多</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Pain Points ===== -->
+<section id="pain" class="fade-in">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-label">主要痛点</span>
+      <h2 class="section-title">我们不是文字的搬运工，而是内容创作的新范式</h2>
+      <p class="section-desc">写报告、简历、方案时，多数人使用的 AI 工具依然是 Chatbot 形态——一切都发生在一条越来越长的对话里。这带来了三个绕不开的问题。</p>
+    </div>
+
+    <div class="pain-intro">
+      <p>Chatbot 的界面本质是<strong>问答记录</strong>，而不是<strong>文档工作台</strong>。当用户想用它完成一份完整的文字内容时，会发现：素材没法被精准调用，AI 只能凭默认思路生成，润色和生成又全部堆在同一条对话里……<strong>越写越乱，越改越远</strong>。ContentFlow 正是为解决这些问题而生。</p>
+    </div>
+
+    <div class="pain-list">
+      <div class="pain-item">
+        <div class="pain-num">01</div>
+        <div class="pain-body">
+          <h4>素材没有针对性，解释成本高</h4>
+          <p>把参考资料一股脑丢进对话，AI 无法判断哪份材料对应哪一段内容；想让它精准使用某份素材，用户得反复解释「这段用文档 A、那段用文档 B」。</p>
+        </div>
+        <div class="pain-solve">
+          <div class="solve-label">ContentFlow 的解法</div>
+          <h4>节点级素材绑定 + 自动继承</h4>
+          <p>在思维导图上给每个章节节点绑定专属素材，父节点素材自动向后代继承。生成哪一章，就只用哪一章该用的素材，不再需要提示词里反复交代。</p>
+        </div>
+      </div>
+
+      <div class="pain-item">
+        <div class="pain-num">02</div>
+        <div class="pain-body">
+          <h4>文字内容缺框架，AI 只能凭默认思路生成</h4>
+          <p>直接让 Chatbot「帮我写一份 XX」，它多半按照训练分布里的通用套路来。写作者心里的骨架、章节顺序、每一节要突出什么，全部无从表达。</p>
+        </div>
+        <div class="pain-solve">
+          <div class="solve-label">ContentFlow 的解法</div>
+          <h4>导入模版一键搭骨架，或用思维导图自定义</h4>
+          <p>上传一份心仪的参考稿（简历/周报/PRD/汇报……），AI 自动识别章节结构、搭好思维导图；也可以完全手写导图。总之——框架你说了算，AI 严格按你的骨架逐章节展开。</p>
+        </div>
+      </div>
+
+      <div class="pain-item">
+        <div class="pain-num">03</div>
+        <div class="pain-body">
+          <h4>生成和润色都在同一条对话里，越滚越长</h4>
+          <p>生成一段、润色一下、再改结构、再补细节……所有操作都堆在一条时间线上。想回头找某段修改后的内容，只能手动往上翻，效率极低。</p>
+        </div>
+        <div class="pain-solve">
+          <div class="solve-label">ContentFlow 的解法</div>
+          <h4>文档主界面 + AI 实时落笔</h4>
+          <p>参考 Claude Code 的交互思路：AI 对话生成或修改的内容，<strong style="color:var(--accent)">即时体现在文档主界面上</strong>，无需复制搬运。对话面板只保留任务记录，文档才是你真正的工作台。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Features ===== -->
+<section id="features" style="background:var(--bg-tint)" class="fade-in">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-label">核心能力</span>
+      <h2 class="section-title">让 AI 真正参与到写作的每一步</h2>
+      <p class="section-desc">从素材管理到骨架搭建，从章节生成到局部修改，六项核心能力覆盖文字创作全流程。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>项目制资源管理</h3>
+        <p>一个任务对应一个项目文件夹，素材、图片分类管理。拖拽上传，本地 IndexedDB 持久化，切换项目互不打扰。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M9.5 11L7 7M9.5 13L7 17M14.5 11l2.5-4M14.5 13l2.5 4"/></svg></div>
+        <h3>思维导图搭骨架</h3>
+        <p>可编辑的思维导图，Enter/Tab 快速增删节点，撤销重做齐全。导图即文档骨架，结构改动实时同步到文档标题。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h3>节点绑定素材 + 写作要求</h3>
+        <p>点开任一节点，绑定专属素材、写下写作要求。父节点素材自动继承给子节点，AI 生成时按需精准取用。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <h3>逐章节 AI 生成</h3>
+        <p>根节点一键生成全文，父节点批量生成子章节，叶子节点单独出稿。最多 3 路并发，SSE 流式返回，等待时间大幅缩短。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20l9-16H3z" transform="translate(0,-1)"/><path d="M4 21h16" stroke-dasharray="2 2"/><circle cx="12" cy="9" r="1.2" fill="currentColor"/></svg></div>
+        <h3>选取原文 · AI 精准修改</h3>
+        <p>在文档中选中一段原文 + 一句需求，AI 直接改写并覆盖选区，按问题类型给出结构化说明。修改前后一键切换，永远可回退。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/><path d="M17 20l3-3-3-3" stroke="none" fill="currentColor" opacity=".2"/></svg></div>
+        <h3>模版一键导入 · AI 自动搭骨架</h3>
+        <p>上传参考模版（MD / DOC / DOCX / PDF），AI 自动识别章节结构、生成思维导图；可选择连同原文正文一起导入，作为写作起点。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Workflow ===== -->
+<section id="workflow" class="fade-in">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-label">工作流</span>
+      <h2 class="section-title">五步走完从空白到成稿</h2>
+      <p class="section-desc">每一步都能看到 AI 如何精准参与——不再是漫无目的的对话，而是围绕文档的协作。</p>
+    </div>
+    <div class="workflow-list">
+
+      <!-- Step 1 -->
+      <div class="workflow-item fade-in">
+        <div class="workflow-media">
+          <div class="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 13h8M8 17h6"/></svg>
+            <span class="file">step-1-import-template.gif</span>
+            <span class="caption">导入模版，AI 自动搭出章节骨架</span>
+          </div>
+        </div>
+        <div class="workflow-text">
+          <span class="step-num">STEP 01</span>
+          <h3>导入模版 · AI 自动解析章节骨架</h3>
+          <p>手边有份心仪的参考稿？直接把它<span class="highlight">拖进"导入模版"</span>——MD / DOC / DOCX / PDF 都行。AI 会识别里面的章节结构，一键生成思维导图；预览时还能<span class="highlight">增删改层级、重命名、选择是否连正文一起导入</span>，确认后落到工作区。</p>
+          <ul>
+            <li>MD 前端秒级解析；DOCX / PDF 由 AI 分析结构</li>
+            <li>预览可编辑：升级 / 降级 / 重命名 / 删除节点</li>
+            <li>可勾选"连同正文导入"，把参考稿作为写作起点</li>
+            <li>不想用模版？也可直接手工搭建思维导图</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="workflow-item fade-in">
+        <div class="workflow-media">
+          <div class="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+            <span class="file">step-2-materials.gif</span>
+            <span class="caption">分类上传素材，拖拽绑定到节点</span>
+          </div>
+        </div>
+        <div class="workflow-text">
+          <span class="step-num">STEP 02</span>
+          <h3>上传素材 · 拖拽绑定到章节</h3>
+          <p>把参考资料、案例、数据一次性上传到项目素材库，<span class="highlight">DOCX / PDF / TXT / MD</span> 均可。首次使用时按需解析成文本并缓存，之后 AI 调用零延迟。素材可以<span class="highlight">直接拖到导图节点上完成绑定</span>，也可以在节点小框里勾选。</p>
+          <ul>
+            <li>拖拽上传 · 分类管理 · 数量一目了然</li>
+            <li>IndexedDB 本地持久化，无需登录</li>
+            <li>PDF 由轻后端解析，DOCX / TXT / MD 前端直读</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="workflow-item fade-in">
+        <div class="workflow-media">
+          <div class="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/><circle cx="18" cy="16" r="2.2" fill="currentColor" opacity=".2"/></svg>
+            <span class="file">step-3-node-popover.gif</span>
+            <span class="caption">节点小框：绑定素材 + 写作要求 + 一键生成</span>
+          </div>
+        </div>
+        <div class="workflow-text">
+          <span class="step-num">STEP 03</span>
+          <h3>节点小框 · 章节级个性化配置</h3>
+          <p>点开任意节点弹出属性小框——<span class="highlight">绑定素材、写下写作要求、勾选是否引用已有内容</span>都在同一张卡片上完成。父节点素材自动继承到全部后代并置灰，子节点无需重复选择。</p>
+          <ul>
+            <li>勾选或拖入素材，父节点素材自动继承</li>
+            <li>写作要求多行输入，可留空使用默认规则</li>
+            <li>"引用已有内容修改"可开关，控制上下文范围</li>
+            <li>三种内容状态：空白 / 已有文本 / 保护，一目了然</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="workflow-item fade-in">
+        <div class="workflow-media">
+          <div class="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span class="file">step-4-generate.gif</span>
+            <span class="caption">从根节点一键生成全文初稿</span>
+          </div>
+        </div>
+        <div class="workflow-text">
+          <span class="step-num">STEP 04</span>
+          <h3>AI 逐章节生成初稿 · 最多 3 路并发</h3>
+          <p>从根节点、父节点或叶子节点发起生成，AI 会拆成独立章节任务，<span class="highlight">最多 3 路并发</span>执行。每章使用自己的写作要求、继承素材和上下文；结果按 nodeId 精准写入对应章节，不会串位。</p>
+          <ul>
+            <li>父章节写引导，叶子章节展开细节，规则自适应</li>
+            <li>失败自动重试，可随时取消，已完成章节保留</li>
+            <li>写入前二次比对，保护用户等待期间的编辑</li>
+            <li>每次生成在 AI 面板留下卡片，随时回看</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="workflow-item fade-in">
+        <div class="workflow-media">
+          <div class="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13l2 2 4-4" stroke="currentColor"/></svg>
+            <span class="file">step-5-selection-edit.gif</span>
+            <span class="caption">AI 对话润色 · 修改直接落到文档</span>
+          </div>
+        </div>
+        <div class="workflow-text">
+          <span class="step-num">STEP 05 · 亮点</span>
+          <h3>AI 对话润色 · 修改直接落到文档</h3>
+          <p>初稿之上，在文档中框选一段内容，AI 输入框上方会出现<span class="highlight">「选取原文」引用卡片</span>。写下你的修改要求，AI 返回改写后的完整文本，<span class="highlight">直接覆盖选区</span>——无需复制、无需搬运，参考了 Claude Code 的交互思路。</p>
+          <ul>
+            <li>结构化输出：问题类型 · 修改前 · 修改后 · 原因</li>
+            <li>修改前/修改后版本一键切换，随时回退</li>
+            <li>选区位置随后续编辑映射，恢复不错位</li>
+            <li>AI 面板保留每次修改的卡片，与生成记录按时间统一排列</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== Author ===== -->
+<section class="author-section fade-in" id="author">
+  <div class="container">
+    <div class="section-head" style="text-align:left">
+      <span class="section-label">关于作者</span>
+      <h2 class="section-title" style="margin-bottom:0">本人的不正经介绍：</h2>
+    </div>
+    <div class="author-card">
+      <div class="author-photo">
+        <img src="images/avatar.jpg" alt="梁伟堂" onerror="this.parentElement.innerHTML='<span class=placeholder>📷 avatar.jpg</span>'">
+      </div>
+      <div class="author-info">
+        <h2>梁伟堂</h2>
+        <p class="en-name">Raytong</p>
+        <div class="author-tags">
+          <span class="tag tag-purple">INFP</span>
+          <span class="tag tag-green">✨ AI Coding 狂热爱好者</span>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-icon">📅</span> 2000.02.11</div>
+          <div class="info-item"><span class="info-icon">📍</span> 广东 · 广州</div>
+          <div class="info-item"><span class="info-icon">🎓</span> 控制工程</div>
+          <div class="info-item"><span class="info-icon">💼</span> AI 产品经理</div>
+        </div>
+        <p class="hobby-title">♥ 兴趣爱好</p>
+        <div class="hobby-grid">
+          <div class="hobby-item">✨ 尝试各种新鲜事！</div>
+          <div class="hobby-item">🌍 旅行，去牛马去的地方！</div>
+          <div class="hobby-item">📷 拍照，风光佬一枚！</div>
+          <div class="hobby-item">🍜 吃好吃的，喝好喝的！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <p>ContentFlow · 内容生成工作流平台</p>
+  <p style="margin-top:6px">© 2026 Raytong. Built with ❤️</p>
+</footer>
+
+<!-- ===== Scroll Animation ===== -->
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
+

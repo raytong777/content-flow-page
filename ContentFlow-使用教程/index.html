@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContentFlow — 使用教程</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --text:#1a1a2e;
+  --text-secondary:#6b6880;
+  --text-tertiary:#9691ad;
+  --bg:#fff;
+  --bg-tint:#faf8ff;
+  --accent:#7e14ff;
+  --accent-bright:#863bff;
+  --accent-light:#ede6ff;
+  --accent-cyan:#47bfff;
+  --card-bg:#f8f5ff;
+  --card-border:rgba(126,20,255,.08);
+  --code-bg:#f4f0ff;
+  --tip-bg:#fef7e6;
+  --tip-border:#f0c674;
+  --warn-bg:#ffe6ec;
+  --warn-border:#f19aab;
+  --radius:18px;
+  --radius-sm:12px;
+  --max-w:1280px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ===== Background ===== */
+.bg-dots{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(126,20,255,.08) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.bg-flow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-flow .line{position:absolute;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(126,20,255,.24),transparent);animation:line-drift linear infinite;opacity:.55}
+.bg-flow .line:nth-child(1){top:12%;width:180px;animation-duration:14s;animation-delay:0s}
+.bg-flow .line:nth-child(2){top:26%;width:120px;animation-duration:16s;animation-delay:-4s}
+.bg-flow .line:nth-child(3){top:41%;width:240px;animation-duration:12s;animation-delay:-2s}
+.bg-flow .line:nth-child(4){top:56%;width:160px;animation-duration:18s;animation-delay:-8s}
+.bg-flow .line:nth-child(5){top:70%;width:200px;animation-duration:15s;animation-delay:-5s}
+.bg-flow .line:nth-child(6){top:84%;width:140px;animation-duration:13s;animation-delay:-9s}
+.bg-flow .line:nth-child(7){top:6%;width:100px;animation-duration:20s;animation-delay:-11s;background:linear-gradient(90deg,transparent,rgba(71,191,255,.28),transparent)}
+@keyframes line-drift{0%{left:-260px;opacity:0}12%{opacity:.55}88%{opacity:.55}100%{left:calc(100% + 20px);opacity:0}}
+
+.bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg-glow .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.12;animation:orb-drift 22s ease-in-out infinite}
+.bg-glow .orb:nth-child(1){width:420px;height:420px;background:var(--accent);top:-120px;right:-100px}
+.bg-glow .orb:nth-child(2){width:320px;height:320px;background:var(--accent-cyan);bottom:-100px;left:-80px;animation-delay:-9s;animation-duration:26s}
+@keyframes orb-drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.06)}66%{transform:translate(-22px,28px) scale(.94)}}
+
+/* ===== Nav ===== */
+.nav{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);background:rgba(255,255,255,.78);border-bottom:1px solid rgba(126,20,255,.06)}
+.nav-inner{max-width:var(--max-w);margin:0 auto;padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--text);text-decoration:none}
+.nav-brand img{width:28px;height:28px}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:.9rem;color:var(--text-secondary);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a.active{color:var(--accent);font-weight:600}
+.nav-cta{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:980px;background:var(--accent-light);color:var(--accent);font-size:.88rem;font-weight:600;text-decoration:none;border:1px solid rgba(126,20,255,.18);transition:all .2s}
+.nav-cta:hover{background:rgba(126,20,255,.14);color:var(--accent);border-color:rgba(126,20,255,.32);transform:translateY(-1px)}
+
+/* ===== Hero ===== */
+.hero{position:relative;z-index:1;padding:80px 40px 60px;text-align:center}
+.hero .container{max-width:900px;margin:0 auto}
+.section-label{display:inline-block;padding:4px 12px;border-radius:20px;background:var(--accent-light);color:var(--accent);font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+.hero h1{font-size:clamp(2.2rem,5.4vw,3.6rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:20px;background:linear-gradient(135deg,#1a1a2e 0%,#7e14ff 55%,#47bfff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .subtitle{font-size:clamp(1rem,2vw,1.2rem);color:var(--text-secondary);max-width:640px;margin:0 auto;line-height:1.7}
+
+/* ===== Layout: TOC + Content ===== */
+.doc-layout{position:relative;z-index:1;max-width:var(--max-w);margin:0 auto;padding:20px 40px 100px;display:grid;grid-template-columns:240px 1fr;gap:60px;align-items:start}
+.toc{position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto;padding:24px 20px;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:0 4px 20px rgba(126,20,255,.04)}
+.toc-title{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:14px;padding-left:12px}
+.toc ol{list-style:none;counter-reset:toc-counter}
+.toc li{counter-increment:toc-counter}
+.toc a{display:block;padding:8px 12px;font-size:.9rem;color:var(--text-secondary);text-decoration:none;border-radius:8px;transition:all .18s;position:relative;padding-left:36px;line-height:1.4}
+.toc a::before{content:counter(toc-counter,decimal-leading-zero);position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.72rem;font-weight:600;color:var(--text-tertiary);font-family:"SF Mono",Monaco,Consolas,monospace}
+.toc a:hover{background:var(--accent-light);color:var(--accent)}
+.toc a.active{background:var(--accent-light);color:var(--accent);font-weight:600}
+.toc a.active::before{color:var(--accent)}
+
+.doc-main{min-width:0}
+.chapter{scroll-margin-top:80px;margin-bottom:88px}
+.chapter-header{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--card-border)}
+.chapter-num{display:inline-flex;align-items:center;justify-content:center;padding:0 12px;height:26px;border-radius:13px;background:var(--accent-light);color:var(--accent);font-size:.75rem;font-weight:600;letter-spacing:.06em;margin-bottom:14px;font-family:"SF Mono",Monaco,Consolas,monospace}
+.chapter h2{font-size:clamp(1.7rem,3.4vw,2.2rem);font-weight:700;letter-spacing:-.015em;line-height:1.25;margin-bottom:12px}
+.chapter-lead{font-size:1.05rem;color:var(--text-secondary);line-height:1.75}
+
+/* Body content */
+.doc-main h3{font-size:1.35rem;font-weight:600;letter-spacing:-.01em;margin:44px 0 16px}
+.doc-main h4{font-size:1.08rem;font-weight:600;margin:28px 0 12px}
+.doc-main p{font-size:1rem;color:var(--text);line-height:1.85;margin-bottom:14px}
+.doc-main p+p{margin-top:-4px}
+.doc-main strong{color:var(--text);font-weight:600}
+.doc-main .em-accent{color:var(--accent);font-weight:600}
+
+/* Bullet list */
+.doc-main ul.plain{list-style:none;padding:0;margin:14px 0 20px}
+.doc-main ul.plain li{position:relative;padding:8px 0 8px 26px;font-size:.98rem;color:var(--text-secondary);line-height:1.7}
+.doc-main ul.plain li::before{content:'';position:absolute;left:2px;top:18px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.55}
+
+/* Step list */
+.step-list{list-style:none;counter-reset:step;margin:20px 0;padding:0}
+.step-list>li{counter-increment:step;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-size:.98rem;line-height:1.65}
+.step-list>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-bright));color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(126,20,255,.24)}
+
+/* Screenshot placeholder */
+.screenshot{margin:24px 0 8px;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#fff,var(--bg-tint));border:1px solid var(--card-border);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(126,20,255,.06);text-align:center;padding:24px}
+.screenshot svg{width:48px;height:48px;color:var(--accent);opacity:.5;margin-bottom:14px}
+.screenshot .file{font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.82rem;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:6px;margin-bottom:10px}
+.screenshot .caption{font-size:.9rem;color:var(--text-tertiary);max-width:340px;line-height:1.55}
+
+/* Tip / Warn callout */
+.callout{display:flex;gap:14px;padding:16px 20px;border-radius:var(--radius-sm);margin:20px 0;border:1px solid;line-height:1.7;font-size:.96rem}
+.callout .cico{flex-shrink:0;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;margin-top:1px}
+.callout-tip{background:var(--tip-bg);border-color:var(--tip-border)}
+.callout-tip .cico{background:#f0c674;color:#7c5416}
+.callout-tip strong{color:#7c5416}
+.callout-warn{background:var(--warn-bg);border-color:var(--warn-border)}
+.callout-warn .cico{background:#f19aab;color:#7a1329}
+.callout-warn strong{color:#7a1329}
+.callout-info{background:var(--accent-light);border-color:rgba(126,20,255,.24)}
+.callout-info .cico{background:var(--accent);color:#fff}
+.callout-info strong{color:var(--accent)}
+
+/* Key */
+.key{display:inline-flex;align-items:center;padding:2px 8px;background:#fff;border:1px solid rgba(126,20,255,.2);border-bottom-width:2px;border-radius:6px;font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.82rem;color:var(--accent);font-weight:600;margin:0 2px;line-height:1.2;vertical-align:baseline}
+
+/* Table */
+.doc-main table{width:100%;border-collapse:separate;border-spacing:0;margin:20px 0;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius-sm);overflow:hidden;font-size:.94rem}
+.doc-main thead{background:var(--card-bg)}
+.doc-main th,.doc-main td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--card-border);line-height:1.6}
+.doc-main th{font-weight:600;color:var(--text);font-size:.9rem}
+.doc-main tbody tr:last-child td{border-bottom:none}
+.doc-main tbody tr:hover{background:var(--bg-tint)}
+.doc-main td code,.doc-main p code,.doc-main li code{background:var(--code-bg);color:var(--accent);padding:2px 8px;border-radius:5px;font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.88em}
+
+/* FAQ */
+.faq details{background:#fff;border:1px solid var(--card-border);border-radius:var(--radius-sm);margin-bottom:12px;overflow:hidden;transition:all .2s}
+.faq details[open]{border-color:rgba(126,20,255,.3);box-shadow:0 6px 20px rgba(126,20,255,.08)}
+.faq summary{padding:16px 22px;cursor:pointer;font-weight:600;font-size:1rem;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--text)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';font-size:1.4rem;color:var(--accent);font-weight:400;transition:transform .2s;line-height:1}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p,.faq details ul{padding:0 22px 18px;color:var(--text-secondary);font-size:.96rem;line-height:1.75}
+.faq details p{margin-top:-4px}
+
+/* CTA end */
+.cta-end{margin:80px auto 0;max-width:800px;text-align:center;padding:56px 40px;background:linear-gradient(135deg,var(--accent),var(--accent-bright));border-radius:calc(var(--radius) + 6px);color:#fff;box-shadow:0 20px 60px rgba(126,20,255,.28);position:relative;overflow:hidden}
+.cta-end::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:var(--accent-cyan);opacity:.28;border-radius:50%;filter:blur(80px)}
+.cta-end h3{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;margin-bottom:14px;position:relative;letter-spacing:-.01em}
+.cta-end p{font-size:1rem;opacity:.9;margin-bottom:28px;position:relative;line-height:1.7}
+.cta-end .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:980px;font-size:1rem;font-weight:600;text-decoration:none;background:#fff;color:var(--accent);transition:all .2s;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.cta-end .btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.16)}
+
+/* Footer */
+footer{position:relative;z-index:1;text-align:center;padding:36px 40px;font-size:.85rem;color:var(--text-secondary);border-top:1px solid var(--card-border)}
+footer a{color:var(--accent);text-decoration:none;margin:0 6px}
+footer a:hover{text-decoration:underline}
+
+/* TOC mobile */
+.toc-mobile{display:none;position:sticky;top:60px;z-index:15;margin:0 -40px 24px;padding:12px 40px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--card-border)}
+.toc-mobile select{width:100%;padding:10px 14px;border-radius:10px;border:1px solid var(--card-border);background:#fff;color:var(--text);font-size:.95rem;font-family:inherit}
+
+/* Responsive */
+@media(max-width:1024px){
+  .doc-layout{grid-template-columns:1fr;padding:20px 40px 80px;gap:0}
+  .toc{display:none}
+  .toc-mobile{display:block}
+}
+@media(max-width:640px){
+  .nav-inner{padding:12px 20px}
+  .nav-links a:not(.nav-cta){display:none}
+  .hero{padding:60px 20px 40px}
+  .doc-layout{padding:16px 20px 60px}
+  .toc-mobile{margin:0 -20px 20px;padding:12px 20px}
+  .chapter{margin-bottom:64px}
+  .step-list>li{padding:12px 16px 12px 52px}
+  .cta-end{padding:44px 24px;margin:56px 0 0}
+  footer{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-dots"></div>
+<div class="bg-flow">
+  <div class="line"></div><div class="line"></div><div class="line"></div>
+  <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
+</div>
+<div class="bg-glow">
+  <div class="orb"></div><div class="orb"></div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="../ContentFlow-展示页/index.html" class="nav-brand"><img src="favicon.svg" alt="ContentFlow">ContentFlow</a>
+    <div class="nav-links">
+      <a href="../ContentFlow-展示页/index.html">回到主页</a>
+      <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="nav-cta">进入网页版 →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <span class="section-label">使用教程</span>
+    <h1>从零开始，写完你的第一份文档</h1>
+    <p class="subtitle">跟着这份教程，一步步认识 ContentFlow 的每个模块。所有操作都可以在网页版直接练习——建议一边看一边动手试。</p>
+  </div>
+</section>
+
+<!-- Doc layout -->
+<div class="doc-layout">
+
+  <!-- Mobile TOC -->
+  <div class="toc-mobile">
+    <select id="tocMobile" onchange="if(this.value)location.hash=this.value">
+      <option value="">跳转到章节…</option>
+      <option value="#ch1">01 · 快速开始</option>
+      <option value="#ch2">02 · 创建项目与管理素材</option>
+      <option value="#ch3">03 · 搭建思维导图骨架</option>
+      <option value="#ch4">04 · 导入模版一键搭骨架</option>
+      <option value="#ch5">05 · 节点属性小框</option>
+      <option value="#ch6">06 · AI 生成与修改</option>
+      <option value="#ch7">07 · 文档编辑与常用技巧</option>
+      <option value="#faq">08 · 常见问题 FAQ</option>
+    </select>
+  </div>
+
+  <!-- Desktop TOC -->
+  <aside class="toc" aria-label="目录">
+    <div class="toc-title">目录</div>
+    <ol>
+      <li><a href="#ch1">快速开始</a></li>
+      <li><a href="#ch2">创建项目与管理素材</a></li>
+      <li><a href="#ch3">搭建思维导图骨架</a></li>
+      <li><a href="#ch4">导入模版一键搭骨架</a></li>
+      <li><a href="#ch5">节点属性小框</a></li>
+      <li><a href="#ch6">AI 生成与修改</a></li>
+      <li><a href="#ch7">文档编辑与常用技巧</a></li>
+      <li><a href="#faq">常见问题 FAQ</a></li>
+    </ol>
+  </aside>
+
+  <!-- Main -->
+  <main class="doc-main">
+
+    <!-- CHAPTER 1 -->
+    <section class="chapter" id="ch1">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 01</span>
+        <h2>快速开始</h2>
+        <p class="chapter-lead">花 30 秒了解 ContentFlow 是什么、界面长什么样、第一次使用建议怎么走。</p>
+      </div>
+
+      <h3>ContentFlow 是什么</h3>
+      <p>ContentFlow 是一个<strong>面向内容创作</strong>的工作流平台。你可以把它理解成"思维导图 + 文档编辑器 + AI 助手"的组合——用思维导图搭骨架、给节点绑素材和要求、让 AI 逐章节生成，再在文档里精修，最后导出成稿。</p>
+      <p>它跟 Chatbot 最大的不同：<span class="em-accent">你有一个文档主界面</span>，AI 的生成和修改直接落到文档里，不是回复框里的一段文字。</p>
+
+      <h3>三栏工作区一览</h3>
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="16" y1="4" x2="16" y2="20"/></svg>
+        <span class="file">screen-01-workspace.png</span>
+        <span class="caption">整体工作区示意：左侧资源管理器 / 中间主工作区 / 右侧 AI 助手</span>
+      </div>
+      <ul class="plain">
+        <li><strong>左侧：资源管理器</strong>（默认 220px，可折叠）——按分类展示素材、图片。</li>
+        <li><strong>中间：主工作区</strong>——在<strong>思维导图</strong>和<strong>文档编辑器</strong>之间切换，通过顶部 Tab 或 <span class="key">Alt/Option</span> + <span class="key">1</span> 切换。</li>
+        <li><strong>右侧：AI 助手</strong>（默认 220px，可拖拽加宽到 560px）——对话、生成记录、选区修改结果都在这里。</li>
+        <li><strong>底部：状态栏</strong>——字数、最近保存时间、AI 健康状态指示灯。</li>
+      </ul>
+
+      <h3>第一次使用建议路径</h3>
+      <ol class="step-list">
+        <li>新建一个项目，起个能一眼看懂的名字（比如"季度报告"）。</li>
+        <li>上传 1–3 份关键素材（TXT/MD/DOCX/PDF 均可）。</li>
+        <li>切到思维导图，<strong>手动列出</strong>文档的一级章节；或者点<strong>"导入模版"</strong>丢一份参考稿进去，让 AI 自动搭出骨架。</li>
+        <li>点开根节点，绑定通用素材，写一句总体写作要求。</li>
+        <li>点击"生成内容"，让 AI 一次性写完初稿全文。</li>
+        <li>切到文档视图，选取需要修改的段落，让 AI 微调。</li>
+      </ol>
+      <div class="callout callout-tip">
+        <div class="cico">💡</div>
+        <div><strong>提示：</strong>首次使用建议先跑通一次完整流程再深入，比一开始就把每个节点都精心配置更容易上手。</div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 2 -->
+    <section class="chapter" id="ch2">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 02</span>
+        <h2>创建项目与管理素材</h2>
+        <p class="chapter-lead">一个任务 = 一个项目 = 一个独立的资源与文档空间。数据全部保存在浏览器本地，不需要登录。</p>
+      </div>
+
+      <h3>新建项目</h3>
+      <ol class="step-list">
+        <li>点击顶部项目下拉菜单中的<strong>"新建项目"</strong>。</li>
+        <li>输入项目名后确认，会自动切换到该项目。</li>
+        <li>再次点击项目下拉可切换到其他项目；首次进入时会自动打开列表中的第一个。</li>
+      </ol>
+      <div class="callout callout-info">
+        <div class="cico">i</div>
+        <div>每个项目独立保存<strong>文件、导图、文档、节点属性、AI 对话记录</strong>，互不影响。</div>
+      </div>
+
+      <h3>两种文件分类</h3>
+      <p>资源管理器把上传的文件分为两类，用途不同：</p>
+      <table>
+        <thead>
+          <tr><th style="width:110px">分类</th><th>支持格式</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>素材</strong></td><td>DOC · DOCX · PDF · TXT · MD</td><td>绑定到节点，作为 AI 生成的上下文</td></tr>
+          <tr><td><strong>图片</strong></td><td>PNG · JPG · JPEG · GIF · WEBP</td><td>保存图片文件（OCR 能力开发中）</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout-info">
+        <div class="cico">i</div>
+        <div>需要用参考稿快速搭出章节骨架？请转到 <a href="#ch4"><strong>章节 04 · 导入模版</strong></a>——模版文件不进入资源管理器，通过思维导图顶部的<strong>"导入模版"按钮</strong>一次性解析后落到导图。</div>
+      </div>
+
+      <h3>上传与管理</h3>
+      <ul class="plain">
+        <li>点击对应分类下的上传按钮，支持<strong>单次选择多个文件</strong>。</li>
+        <li>每个分类会显示当前文件数量。</li>
+        <li>可以删除文件；文件的原始二进制和解析文本都保存在浏览器 IndexedDB。</li>
+        <li><span class="em-accent">拖拽</span>资源管理器中的文件到思维导图节点上，即可完成绑定。</li>
+      </ul>
+
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+        <span class="file">screen-02-upload.gif</span>
+        <span class="caption">分类上传素材，并拖拽到导图节点完成绑定</span>
+      </div>
+
+      <h3>素材是怎么被 AI 读到的</h3>
+      <p>素材<strong>首次被使用时才解析</strong>成纯文本，不会在上传阶段阻塞你。解析结果会缓存到文件记录里，后续 AI 生成直接使用缓存，不重复解析。</p>
+      <ul class="plain">
+        <li><strong>TXT / Markdown：</strong>前端直接读取。</li>
+        <li><strong>DOCX：</strong>前端使用 Mammoth 提取纯文本。</li>
+        <li><strong>PDF：</strong>发送到轻后端，由 <code>pdf-parse</code> 解析。</li>
+      </ul>
+      <div class="callout callout-warn">
+        <div class="cico">!</div>
+        <div><strong>注意：</strong>不支持的格式或空文件会在生成时返回解析错误，<strong>不会作为空素材</strong>传给 AI，避免 AI 凭空发挥。</div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 3 -->
+    <section class="chapter" id="ch3">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 03</span>
+        <h2>搭建思维导图骨架</h2>
+        <p class="chapter-lead">思维导图不仅是可视化工具，更是<strong>文档的骨架</strong>和 <strong>AI 生成的调度中心</strong>。</p>
+      </div>
+
+      <h3>节点的基本操作</h3>
+      <p>ContentFlow 为每个节点分配了<strong>稳定的 nodeId</strong>——即使两个同名节点，操作也不会混淆。</p>
+      <table>
+        <thead><tr><th style="width:170px">操作</th><th>效果</th></tr></thead>
+        <tbody>
+          <tr><td><strong>单击节点</strong></td><td>选中节点并打开节点属性小框</td></tr>
+          <tr><td><strong>双击节点</strong> / <span class="key">F2</span></td><td>行内编辑节点标题</td></tr>
+          <tr><td><span class="key">Enter</span></td><td>添加同级节点（根节点特殊：改为添加子节点，避免多个 H1）</td></tr>
+          <tr><td><span class="key">Tab</span></td><td>添加子节点</td></tr>
+          <tr><td><span class="key">Delete</span> / <span class="key">Backspace</span></td><td>删除当前节点（会二次确认）</td></tr>
+          <tr><td><span class="key">Alt</span>+<span class="key">↑</span> / <span class="key">↓</span></td><td>上下调整同级节点顺序</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout-tip">
+        <div class="cico">💡</div>
+        <div>新节点创建后会<strong>自动选中并进入编辑</strong>，直接输入标题即可。空标题不会保存，会保留或恢复原标题。</div>
+      </div>
+
+      <h3>撤销、缩放与视角</h3>
+      <ul class="plain">
+        <li>工具栏支持<strong>放大、缩小、适应视图、撤销、重做</strong>。</li>
+        <li>快捷键 <span class="key">⌘/Ctrl</span>+<span class="key">Z</span>、<span class="key">⌘/Ctrl</span>+<span class="key">Shift</span>+<span class="key">Z</span>、<span class="key">⌘/Ctrl</span>+<span class="key">Y</span> 均可用。</li>
+        <li>撤销栈最多保留 <strong>50 步</strong>，刷新后清空。</li>
+        <li>普通新增/重命名/移动<strong>不会</strong>强制重新适配视图，避免缩放跳动。只有首次进入、切换项目或主动点击"适应视图"时才自动适配。</li>
+      </ul>
+
+      <h3>导图与文档如何同步</h3>
+      <p><strong>导图是文档标题结构的主要来源。</strong>你在导图里的动作会同步反映到文档标题：</p>
+      <ul class="plain">
+        <li><strong>新增节点：</strong>文档中生成对应空章节，不影响其他章节正文。</li>
+        <li><strong>重命名节点：</strong>标题更新，正文保留。</li>
+        <li><strong>移动节点：</strong>正文跟随节点一起移动。</li>
+        <li><strong>删除节点：</strong>对应章节从文档中移除（有二次确认）。</li>
+      </ul>
+      <div class="callout callout-info">
+        <div class="cico">i</div>
+        <div>同步方向以<strong>导图 → 文档</strong>为主。所有变更都会立即写入 IndexedDB，刷新页面不丢结构。</div>
+      </div>
+
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M9.5 11L7 7M9.5 13L7 17M14.5 11l2.5-4M14.5 13l2.5 4"/></svg>
+        <span class="file">screen-03-mindmap.gif</span>
+        <span class="caption">思维导图节点增删改与文档标题的同步</span>
+      </div>
+    </section>
+
+    <!-- CHAPTER 4 -->
+    <section class="chapter" id="ch4">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 04</span>
+        <h2>导入模版一键搭骨架</h2>
+        <p class="chapter-lead">手上有份心仪的参考稿？直接把它交给 ContentFlow——AI 会识别章节结构、生成思维导图，可选择连原文正文一起带进对应章节。</p>
+      </div>
+
+      <h3>什么时候用</h3>
+      <ul class="plain">
+        <li>你有一份<strong>结构可以借鉴</strong>的旧文档、简历、周报、PRD、汇报稿，想沿用它的框架。</li>
+        <li>你不想从零手写导图，想让 AI 帮你把骨架先立起来，再在此基础上调整。</li>
+        <li>你甚至想把参考稿的<strong>原文正文</strong>作为写作起点，让 AI 后续在此基础上润色扩写。</li>
+      </ul>
+
+      <h3>入口</h3>
+      <p>切到思维导图视图，工具栏「帮助」按钮右边就是<strong>「导入模版」</strong>按钮（紫色）。当前项目未选择时按钮为禁用。</p>
+
+      <h3>解析流程</h3>
+      <ol class="step-list">
+        <li><strong>上传文件</strong>：点击或拖入 1 个文件，支持 MD / DOC / DOCX / PDF。</li>
+        <li><strong>自动解析</strong>：
+          <ul class="plain" style="margin-top:6px">
+            <li>MD：前端正则秒级解析。</li>
+            <li>DOCX / DOC：前端 Mammoth 转 HTML 后由 <strong>AI 分析结构</strong>。</li>
+            <li>PDF：后端抽取纯文本后由 <strong>AI 分析结构</strong>。</li>
+          </ul>
+        </li>
+        <li><strong>预览编辑</strong>：查看 AI 解析出的章节树，可以任意<span class="em-accent">增删改层级、重命名、勾选是否连正文一起导入</span>。</li>
+        <li><strong>开始导入</strong>：确认后落到思维导图和文档；勾选了正文的章节会覆盖到对应位置。</li>
+      </ol>
+
+      <div class="callout callout-info">
+        <div class="cico">i</div>
+        <div>导入时 <strong>文件名会作为最外层 H1</strong>，AI 识别到的所有层级顺延一级——这样你导入多份模版时结构一目了然。</div>
+      </div>
+
+      <h3>预览面板可以做什么</h3>
+      <table>
+        <thead><tr><th style="width:150px">操作</th><th>效果</th></tr></thead>
+        <tbody>
+          <tr><td><strong>勾选正文导入</strong></td><td>把 AI 识别的原文正文一并写入该章节；若章节无正文则复选框禁用</td></tr>
+          <tr><td><strong>H1←→H6 层级</strong></td><td>行悬停时右侧箭头按钮，逐级升/降；点击标题就地重命名</td></tr>
+          <tr><td><strong>删除节点</strong></td><td>移除误识别的章节</td></tr>
+          <tr><td><strong>全选正文 / 清空</strong></td><td>批量切换所有有正文的章节的勾选状态</td></tr>
+          <tr><td><strong>重置</strong></td><td>撤销所有修改，恢复到 AI 初次解析结果</td></tr>
+        </tbody>
+      </table>
+
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 13h8M8 17h6"/></svg>
+        <span class="file">screen-04-import-template.png</span>
+        <span class="caption">导入模版：上传文件 → AI 解析 → 预览编辑 → 一键落到工作区</span>
+      </div>
+
+      <h3>与当前文档的关系</h3>
+      <ul class="plain">
+        <li>导入会<strong>覆盖当前思维导图结构</strong>——现有章节的正文按标题匹配保留，无匹配的章节会消失。</li>
+        <li>勾选了"连同正文导入"的章节，其内容会覆盖到对应位置（如已有内容将被替换）。</li>
+        <li>导入后可用 <span class="key">⌘/Ctrl</span> + <span class="key">Z</span> 撤销（导入本身占一次撤销记录）。</li>
+      </ul>
+
+      <div class="callout callout-warn">
+        <div class="cico">!</div>
+        <div><strong>AI 解析不完美怎么办？</strong>DOCX / PDF 的解析结果可能会漏识别某些视觉标题、或者把长段正文误标为标题——预览面板里全都可以调。解析失败时点<strong>"重试"</strong>即可。</div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 5 -->
+    <section class="chapter" id="ch5">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 05</span>
+        <h2>节点属性小框</h2>
+        <p class="chapter-lead">这是 ContentFlow 最重要的交互——把「写什么、用什么、怎么写」讲给 AI 听，就发生在这张卡片上。</p>
+      </div>
+
+      <h3>小框里都有什么</h3>
+      <ol class="step-list">
+        <li>节点标题（顶部显示，方便确认位置）</li>
+        <li>内容状态及状态说明（三种状态见下方）</li>
+        <li><strong>绑定素材列表</strong>（可勾选，可从资源管理器拖入）</li>
+        <li><strong>写作要求</strong>多行输入框</li>
+        <li>"引用已有内容修改"勾选项（默认开启）</li>
+        <li><strong>生成内容</strong>按钮（写作要求区域右下侧）</li>
+        <li>底部：查看章节 · 上移 · 下移 · 删除</li>
+      </ol>
+
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/><circle cx="18" cy="16" r="2.2" fill="currentColor" opacity=".2"/></svg>
+        <span class="file">screen-04-node-popover.png</span>
+        <span class="caption">节点属性小框的完整界面</span>
+      </div>
+
+      <h3>绑定素材：勾选、拖入、自动继承</h3>
+      <ul class="plain">
+        <li>可以直接在小框里<strong>勾选</strong>已上传的素材。</li>
+        <li>也可以从资源管理器<strong>拖入</strong>节点完成绑定。</li>
+        <li><span class="em-accent">父节点绑定的素材会自动继承到全部后代节点</span>——子节点里显示为已勾选并置灰，不能取消。</li>
+        <li>悬浮继承项会提示"继承自父节点"。</li>
+        <li>素材列表带滚动条，初始可视高度约 7 条。</li>
+      </ul>
+      <div class="callout callout-tip">
+        <div class="cico">💡</div>
+        <div><strong>实用技巧：</strong>把整份文档共用的素材（如总纲、术语表）绑定到<strong>根节点</strong>，全文生成时自动传给每一章。分章节独有的素材再绑到对应父节点/叶子节点即可。</div>
+      </div>
+
+      <h3>写作要求：可以省略，会有默认规则</h3>
+      <p>每个节点单独保存自己的写作要求。批量生成时<strong>不要求你为所有节点预先配置</strong>。若某节点没写要求，AI 会用以下默认规则：</p>
+      <ul class="plain">
+        <li><strong>有子节点的章节：</strong>生成章节引导和结构概述，不提前展开子章节细节。</li>
+        <li><strong>叶子节点：</strong>围绕本节标题完整展开，生成具体、连贯的正文。</li>
+      </ul>
+
+      <h3>"引用已有内容修改"</h3>
+      <p>默认勾选。勾选后 AI 生成时会把<strong>当前章节已有内容、可用的祖先章节和前序章节内容</strong>作为上下文，帮助保持行文一致。</p>
+      <p>如果你希望某章节完全从零重写、不受前面已写内容影响，可以取消此项。</p>
+
+      <h3>三种内容状态</h3>
+      <table>
+        <thead><tr><th style="width:170px">状态</th><th>含义</th><th>父节点批量生成时</th></tr></thead>
+        <tbody>
+          <tr><td><strong>空白</strong></td><td>当前章节及其子章节没有正文</td><td>可以生成</td></tr>
+          <tr><td><strong>已有文本</strong></td><td>当前节点或子树已有正文，尚未保护</td><td>可以覆盖</td></tr>
+          <tr><td><strong>已有文本（保护）</strong></td><td>经过人工编辑或叶子节点二次生成</td><td><span class="em-accent">跳过，不覆盖</span></td></tr>
+        </tbody>
+      </table>
+      <p>状态旁有<strong>圆圈问号</strong>图标，悬浮显示简短说明。保护状态提供<strong>「解除保护」</strong>操作。</p>
+      <div class="callout callout-info">
+        <div class="cico">i</div>
+        <div>用户主动点击某节点的"生成内容"时<strong>允许直接重写</strong>，即使它当前处于保护状态。保护规则主要用于批量生成场景。</div>
+      </div>
+    </section>
+
+    <!-- CHAPTER 6 -->
+    <section class="chapter" id="ch6">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 06</span>
+        <h2>AI 生成与修改</h2>
+        <p class="chapter-lead">ContentFlow 的核心能力：让 AI 精准参与到文档的每一次生成和修改，结果直接落到文档，不需要复制搬运。</p>
+      </div>
+
+      <h3>三种生成范围</h3>
+      <p>在不同层级的节点上点击"生成内容"，AI 的生成范围不同：</p>
+      <table>
+        <thead><tr><th style="width:170px">发起位置</th><th>生成范围</th></tr></thead>
+        <tbody>
+          <tr><td><strong>根节点</strong></td><td>生成根节点下所有章节，<strong>不为文档标题本身生成正文</strong>——因此根节点绑定的素材实际就是"全局素材"</td></tr>
+          <tr><td><strong>父节点</strong></td><td>生成父节点自身及其全部后代章节</td></tr>
+          <tr><td><strong>叶子节点</strong></td><td>只生成当前章节</td></tr>
+        </tbody>
+      </table>
+
+      <h3>并发策略：最多 3 路并发</h3>
+      <ul class="plain">
+        <li>一次父节点/根节点生成会拆成多个<strong>独立章节任务</strong>。</li>
+        <li>每个任务使用<strong>该节点自己的标题、写作要求、继承素材和上下文</strong>。</li>
+        <li>同时最多运行 <strong>3 个</strong>章节生成请求，在等待时间和服务压力之间取平衡。</li>
+        <li>素材<strong>统一解析和去重</strong>，避免每个章节重复解析同一份文件。</li>
+        <li>单个章节请求失败自动等待约 600ms <strong>重试一次</strong>。</li>
+        <li>生成过程中可<strong>随时取消</strong>，已完成章节保留，未完成任务停止。</li>
+      </ul>
+
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <span class="file">screen-05-batch-generate.gif</span>
+        <span class="caption">从根节点一键生成全文，3 路并发实时展示</span>
+      </div>
+
+      <h3>标题不会被 AI 改动</h3>
+      <ul class="plain">
+        <li>AI <strong>只生成章节正文</strong>，不允许重复标题或返回新的 Markdown 标题结构。</li>
+        <li>生成结果按 <code>nodeId</code> <strong>精确覆盖</strong>对应章节正文，子节点内容不会被错写到父节点。</li>
+        <li>写入前会二次比较：如果该章节在等待期间被你或其他操作修改过，<strong>会跳过覆盖并报告失败</strong>，保护你刚完成的编辑。</li>
+      </ul>
+
+      <h3>保护与覆盖规则</h3>
+      <ul class="plain">
+        <li><strong>批量生成</strong>会跳过后代中处于"保护"状态的章节。</li>
+        <li><strong>用户主动点击</strong>某节点的生成，允许直接重写，即使它此前处于保护状态。</li>
+        <li>对已有正文的<strong>叶子节点再次生成</strong>，视为微调，写入后<strong>自动进入保护状态</strong>。</li>
+        <li><strong>首次生成</strong>空白叶子节点只进入"已有文本"，不会立即保护。</li>
+        <li><strong>手动修改</strong>某章节正文后，该章节进入保护状态。</li>
+        <li>清空某章节正文后，该章节回到"空白"并<strong>解除保护</strong>。</li>
+      </ul>
+      <div class="callout callout-warn">
+        <div class="cico">!</div>
+        <div><strong>安全提示：</strong>如果 AI 的批量生成不小心跳过了你想更新的章节，检查它是否处于"保护"状态——可以点开对应节点，点"解除保护"后再重新生成。</div>
+      </div>
+
+      <h3 style="margin-top:56px;padding-top:32px;border-top:2px dashed rgba(126,20,255,.15)">✨ 亮点功能：选取原文 · AI 精准修改</h3>
+      <p>这是 ContentFlow 参考 <strong>Claude Code</strong> 交互思路设计的能力——AI 修改的结果<span class="em-accent">直接体现在文档主界面</span>，不需要复制搬运。</p>
+
+      <h4>怎么用</h4>
+      <ol class="step-list">
+        <li>在文档编辑器中<strong>选中一段连续原文</strong>。</li>
+        <li>右侧 AI 输入框上方会出现<strong>"选取原文"引用卡片</strong>（单行摘要，悬浮可查看完整内容）。</li>
+        <li>在输入框写下你的修改要求（比如"语气改得更学术"）并发送。</li>
+        <li>AI 返回<strong>修改后的完整文本 + 结构化修改项</strong>，自动<span class="em-accent">覆盖当前选区</span>。</li>
+      </ol>
+
+      <div class="screenshot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13l2 2 4-4"/></svg>
+        <span class="file">screen-06-selection-edit.gif</span>
+        <span class="caption">选取原文 → 提要求 → AI 直接改写覆盖选区</span>
+      </div>
+
+      <h4>每条修改都会给出结构化说明</h4>
+      <p>AI 返回的每个修改项包含：<strong>问题类型 · 修改前 · 修改后 · 修改原因</strong>。问题类型优先归类为：</p>
+      <ul class="plain">
+        <li>表达问题 · 结构问题 · 内容缺失</li>
+        <li>术语或事实问题 · 格式问题 · 其他问题</li>
+      </ul>
+
+      <h4>修改结果卡片：可返回、可重新应用</h4>
+      <ul class="plain">
+        <li>修改完成后，AI 面板出现<strong>修改结果卡片</strong>，可展开查看各问题类型的简短总结。</li>
+        <li>点击<strong>「返回」</strong>按钮恢复该次修改前的选区内容，成功后显示"已返回修改前内容"。</li>
+        <li>返回按钮<strong>不会禁用</strong>，可反复恢复到修改前版本。</li>
+        <li>点击<strong>「重新应用」</strong>再次写入修改后的版本。</li>
+        <li>当前选区位置会随后续编辑器事务映射，<strong>降低前文变化后恢复到错误位置的风险</strong>。</li>
+      </ul>
+      <div class="callout callout-tip">
+        <div class="cico">💡</div>
+        <div><strong>试试看：</strong>选一段觉得啰嗦的正文，输入"精简为一句话"，看看返回效果。不满意就点返回，重新描述你的要求。</div>
+      </div>
+
+      <h3>普通 AI 对话</h3>
+      <p>如果你<strong>没有选取任何原文</strong>，输入框里的内容会被当作普通对话处理：</p>
+      <ul class="plain">
+        <li>AI 回答只显示在右侧对话框中，<strong>不自动改写文档</strong>。</li>
+        <li>请求携带当前导图结构和文档内容作为上下文。</li>
+        <li>使用 SSE 流式显示，支持中途停止。</li>
+        <li>可以问结构性问题："这篇文档整体结构合理吗？" "第二章和第三章有没有内容重复？"</li>
+      </ul>
+    </section>
+
+    <!-- CHAPTER 7 -->
+    <section class="chapter" id="ch7">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 07</span>
+        <h2>文档编辑与常用技巧</h2>
+        <p class="chapter-lead">主工作区里除了 AI 相关能力，还有一些编辑细节可以让你写得更顺。</p>
+      </div>
+
+      <h3>关联标题保护</h3>
+      <ul class="plain">
+        <li>与导图节点关联的文档标题显示为<strong>蓝色加粗</strong>，左侧显示自动计算的层级编号。</li>
+        <li>关联标题可以<strong>修改文字</strong>，改动会同步回思维导图。</li>
+        <li>关联标题<strong>不能被删除、合并或转换为普通段落</strong>，避免破坏导图和文档的映射。</li>
+        <li>标题被清空时会显示提示，离开标题后恢复最后一个有效标题。</li>
+      </ul>
+
+      <h3>标题悬浮操作条</h3>
+      <p>操作条只在<strong>鼠标悬浮标题左侧层级编号</strong>时出现，避免选择或复制标题时的误触。当前提供：</p>
+      <ul class="plain">
+        <li><strong>一键复制</strong>（已实现）：复制当前标题及其章节正文</li>
+        <li>优化表达 · 精简内容 · 丰富内容 · 继续写（<em>界面已就位，执行逻辑开发中</em>）</li>
+      </ul>
+
+      <h3>快速跳转到章节</h3>
+      <ul class="plain">
+        <li>节点属性小框中的<strong>「查看章节」</strong>会切换到文档视图，自动滚动到对应标题并短暂高亮。</li>
+        <li>顶部 Tab 或 <span class="key">Alt/Option</span>+<span class="key">1</span> 在思维导图/文档之间切换。</li>
+      </ul>
+
+      <h3>AI 面板宽度</h3>
+      <ul class="plain">
+        <li>默认宽度 <strong>220px</strong>，可拖动左边缘加宽到最多 <strong>560px</strong>。</li>
+        <li>面板最大宽度会根据窗口宽度和左侧资源栏状态动态收紧，优先为中间工作区保留约 480px。</li>
+        <li>调整后的宽度会写入本地存储，刷新后继续使用。</li>
+        <li>拖拽条支持键盘：<span class="key">←</span> / <span class="key">→</span> 微调，<span class="key">Shift</span>+方向键加大步长，<span class="key">Home</span> 回到最小，<span class="key">End</span> 到当前最大。</li>
+      </ul>
+
+      <h3>自动保存与状态栏</h3>
+      <ul class="plain">
+        <li>正文更新采用<strong>防抖自动保存</strong>；切换视图不会丢失待保存内容。</li>
+        <li>状态栏显示：当前文档字数 · 最近自动保存时间 · AI 后端健康状态（每 30 秒检查一次）。</li>
+        <li>AI 状态显示"AI 可用"、"AI 不可用"或"检测中"三种。</li>
+      </ul>
+
+      <h3>主题切换</h3>
+      <p>支持<strong>浅色和深色</strong>两种主题，选择保存在本地。</p>
+
+      <h3>快捷键汇总</h3>
+      <table>
+        <thead><tr><th style="width:200px">快捷键</th><th>功能</th></tr></thead>
+        <tbody>
+          <tr><td><span class="key">Alt</span>+<span class="key">1</span></td><td>思维导图 ↔ 文档 视图切换</td></tr>
+          <tr><td><span class="key">Enter</span></td><td>思维导图中添加同级节点（根节点：添加子节点）</td></tr>
+          <tr><td><span class="key">Tab</span></td><td>思维导图中添加子节点</td></tr>
+          <tr><td><span class="key">F2</span></td><td>编辑当前节点标题</td></tr>
+          <tr><td><span class="key">Delete</span> / <span class="key">Backspace</span></td><td>删除当前节点（二次确认）</td></tr>
+          <tr><td><span class="key">Alt</span>+<span class="key">↑</span> / <span class="key">↓</span></td><td>调整同级节点顺序</td></tr>
+          <tr><td><span class="key">⌘/Ctrl</span>+<span class="key">Z</span></td><td>撤销</td></tr>
+          <tr><td><span class="key">⌘/Ctrl</span>+<span class="key">Shift</span>+<span class="key">Z</span> / <span class="key">⌘/Ctrl</span>+<span class="key">Y</span></td><td>重做</td></tr>
+          <tr><td><span class="key">Esc</span></td><td>关闭思维导图帮助框</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- FAQ -->
+    <section class="chapter faq" id="faq">
+      <div class="chapter-header">
+        <span class="chapter-num">CHAPTER 08</span>
+        <h2>常见问题 FAQ</h2>
+        <p class="chapter-lead">使用过程中最常被问到的问题，都收集在这里。</p>
+      </div>
+
+      <details>
+        <summary>我的数据存在哪里？会不会丢？</summary>
+        <p>所有数据保存在<strong>浏览器 IndexedDB</strong>——包括项目、文件二进制、解析文本缓存、导图、文档、节点元数据、AI 对话记录。刷新页面、关闭浏览器都不会丢失。</p>
+        <p>但请注意：<strong>清理浏览器数据、切换浏览器/设备</strong>会导致数据不可见，因为它们并没有上传到云端。目前不支持账号体系和云端同步。</p>
+      </details>
+
+      <details>
+        <summary>可以让 AI 从已有文档一键搭骨架吗？</summary>
+        <p>可以。切到思维导图视图，工具栏「导入模版」按钮 → 上传一份参考稿（MD / DOC / DOCX / PDF）：</p>
+        <ul>
+          <li>MD 由前端直接解析章节；DOCX / PDF 由 AI 分析结构。</li>
+          <li>预览面板里可以增删改层级、重命名，也可以勾选是否连正文一起导入。</li>
+          <li>确认后自动生成思维导图 + 文档骨架，可直接在此基础上编辑。</li>
+        </ul>
+        <p>详见 <a href="#ch4"><strong>章节 04</strong></a>。</p>
+      </details>
+      <details>
+        <summary>能否云同步 / 多设备使用？</summary>
+        <p>当前版本<strong>不支持</strong>。ContentFlow 定位是无需登录的本地工具，数据留在你自己的浏览器里。多设备协作不在当前开发范围内。</p>
+      </details>
+
+      <details>
+        <summary>导出 Word / PDF 什么时候上线？</summary>
+        <p>导出 Word (.docx) 已在计划中，采用"所见即所得"的转换逻辑（Markdown → AST → docx）——你在编辑器里看到什么，导出就是什么。PDF 导出会在 Word 导出之后跟进。</p>
+      </details>
+
+      <details>
+        <summary>AI 生成后不满意，能撤回吗？</summary>
+        <p>可以。有两种情况：</p>
+        <ul>
+          <li><strong>选取原文修改：</strong>AI 面板的修改结果卡片上有"返回"按钮，可以恢复到修改前的选区内容；点"重新应用"又能写回修改后的版本，来回切换。</li>
+          <li><strong>章节生成：</strong>如果生成的章节内容不满意，你可以直接手动编辑覆盖（此后该章节进入保护状态）；也可以点开节点"生成内容"，让 AI 用当前的写作要求重新生成一次。</li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>生成过程中失败了怎么办？</summary>
+        <p>单个章节请求失败会<strong>自动等待约 600ms 重试一次</strong>。如果重试后依然失败，工作流会显示失败数，其他成功的章节不受影响。你可以在失败节点上再次点击"生成内容"手动重试。</p>
+        <p>如果状态栏显示"AI 不可用"，通常是后端未启动或网络问题——每 30 秒会自动重新检查。</p>
+      </details>
+
+      <details>
+        <summary>为什么我从父节点生成，某几个子章节没被更新？</summary>
+        <p>大概率因为这些子章节处于<strong>"已有文本（保护）"</strong>状态——通常是你手动改过、或叶子节点二次生成过。批量生成会跳过保护章节。</p>
+        <p>解决办法：点开对应节点，点"解除保护"，然后再从父节点批量生成。</p>
+      </details>
+
+      <details>
+        <summary>为什么我只是浏览了文档，章节就变成保护状态了？</summary>
+        <p>这是<strong>旧版本的问题</strong>，已经修复。当前只有<strong>真实的用户内容事务</strong>会被识别为人工编辑并触发保护，浏览、切换视图、系统同步标题都不会。</p>
+      </details>
+
+      <details>
+        <summary>父节点绑定的素材，子节点也自动用吗？</summary>
+        <p>是的。父节点绑定的素材会<strong>自动继承到全部后代节点</strong>，在子节点中显示为已勾选并置灰，无法在子节点取消。</p>
+        <p>生成时会合并该节点<strong>所有祖先和自身</strong>绑定的素材，自动去重后传给 AI。</p>
+      </details>
+
+      <details>
+        <summary>可以同时选取多段不连续的原文让 AI 修改吗？</summary>
+        <p><strong>暂不支持。</strong>当前选取原文修改只支持一个连续选区。多不连续选区的场景不在当前开发范围。</p>
+      </details>
+
+      <details>
+        <summary>思维导图节点太多，怎么快速定位？</summary>
+        <p>工具栏支持<strong>放大 / 缩小 / 适应视图</strong>；工具栏右侧会显示当前选中的节点名称。此外，从文档回到导图时，之前选中的节点依然被选中。</p>
+      </details>
+    </section>
+
+    <!-- CTA end -->
+    <div class="cta-end">
+      <h3>准备好了？</h3>
+      <p>进入网页版，开始写你的第一份 ContentFlow 文档。</p>
+      <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="btn">进入网页版 →</a>
+    </div>
+
+  </main>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>ContentFlow · 使用教程</p>
+  <p style="margin-top:6px"><a href="../ContentFlow-展示页/index.html">← 返回展示页</a> · <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener">进入网页版</a></p>
+  <p style="margin-top:6px">© 2026 Raytong. Built with ❤️</p>
+</footer>
+
+<!-- Sticky TOC highlight -->
+<script>
+const links = document.querySelectorAll('.toc a');
+const chapters = document.querySelectorAll('.chapter');
+const map = new Map();
+links.forEach(a => map.set(a.getAttribute('href').slice(1), a));
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      links.forEach(a => a.classList.remove('active'));
+      const link = map.get(id);
+      if (link) link.classList.add('active');
+      const sel = document.getElementById('tocMobile');
+      if (sel) sel.value = '#' + id;
+    }
+  });
+}, { rootMargin: '-40% 0px -55% 0px' });
+
+chapters.forEach(c => observer.observe(c));
+</script>
+</body>
+</html>

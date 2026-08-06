@@ -123,8 +123,12 @@ section{padding:120px 40px}
 .workflow-item{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
 .workflow-item:nth-child(even){direction:rtl}
 .workflow-item:nth-child(even)>*{direction:ltr}
-.workflow-media{border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#fff,var(--bg-tint));border:1px solid var(--card-border);aspect-ratio:16/10;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:0 12px 40px rgba(126,20,255,.08)}
-.workflow-media .placeholder{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--text-tertiary);padding:20px;text-align:center}
+.workflow-media{border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#fff,var(--bg-tint));border:1px solid var(--card-border);aspect-ratio:16/10;position:relative;box-shadow:0 12px 40px rgba(126,20,255,.08)}
+.workflow-media .workflow-gif{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:linear-gradient(135deg,#fff,var(--bg-tint));display:block}
+.workflow-media .workflow-gif + .placeholder{display:none}
+.workflow-media .workflow-gif.is-broken{display:none}
+.workflow-media .workflow-gif.is-broken + .placeholder{display:flex}
+.workflow-media .placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--text-tertiary);padding:20px;text-align:center}
 .workflow-media .placeholder svg{width:52px;height:52px;color:var(--accent);opacity:.5}
 .workflow-media .placeholder .file{font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.82rem;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:6px}
 .workflow-media .placeholder .caption{font-size:.9rem;line-height:1.5;max-width:280px}
@@ -211,7 +215,7 @@ footer a:hover{text-decoration:underline}
       <a href="#pain">主要痛点</a>
       <a href="#features">核心能力</a>
       <a href="#workflow">工作流</a>
-      <a href="../ContentFlow-使用教程/index.html">使用教程</a>
+      <a href="../ContentFlow-使用教程/index.html" class="nav-cta">使用教程</a>
       <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="nav-cta">进入网页版 →</a>
     </div>
   </div>
@@ -226,7 +230,7 @@ footer a:hover{text-decoration:underline}
     <p class="tagline">一键从模版搭骨架 · 素材节点绑定 · AI 逐章节生成 · 选区精准修改</p>
     <div class="cta-row">
       <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="btn btn-primary">在线体验 →</a>
-      <a href="#pain" class="btn btn-ghost">了解更多</a>
+      <a href="../ContentFlow-使用教程/index.html" class="btn btn-ghost">使用教程</a>
     </div>
   </div>
 </section>
@@ -343,6 +347,7 @@ footer a:hover{text-decoration:underline}
       <!-- Step 1 -->
       <div class="workflow-item fade-in">
         <div class="workflow-media">
+          <img class="workflow-gif" src="images/step-1-import-template.gif" alt="导入模版演示" decoding="async">
           <div class="placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 13h8M8 17h6"/></svg>
             <span class="file">step-1-import-template.gif</span>
@@ -354,7 +359,7 @@ footer a:hover{text-decoration:underline}
           <h3>导入模版 · AI 自动解析章节骨架</h3>
           <p>手边有份心仪的参考稿？直接把它<span class="highlight">拖进"导入模版"</span>——MD / DOC / DOCX / PDF 都行。AI 会识别里面的章节结构，一键生成思维导图；预览时还能<span class="highlight">增删改层级、重命名、选择是否连正文一起导入</span>，确认后落到工作区。</p>
           <ul>
-            <li>MD 前端秒级解析；DOCX / PDF 由 AI 分析结构</li>
+            <li>AI自动解析模版框架</li>
             <li>预览可编辑：升级 / 降级 / 重命名 / 删除节点</li>
             <li>可勾选"连同正文导入"，把参考稿作为写作起点</li>
             <li>不想用模版？也可直接手工搭建思维导图</li>
@@ -365,6 +370,7 @@ footer a:hover{text-decoration:underline}
       <!-- Step 2 -->
       <div class="workflow-item fade-in">
         <div class="workflow-media">
+          <img class="workflow-gif" src="images/step-2-materials.gif" alt="素材上传与绑定演示" decoding="async">
           <div class="placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
             <span class="file">step-2-materials.gif</span>
@@ -377,8 +383,8 @@ footer a:hover{text-decoration:underline}
           <p>把参考资料、案例、数据一次性上传到项目素材库，<span class="highlight">DOCX / PDF / TXT / MD</span> 均可。首次使用时按需解析成文本并缓存，之后 AI 调用零延迟。素材可以<span class="highlight">直接拖到导图节点上完成绑定</span>，也可以在节点小框里勾选。</p>
           <ul>
             <li>拖拽上传 · 分类管理 · 数量一目了然</li>
-            <li>IndexedDB 本地持久化，无需登录</li>
-            <li>PDF 由轻后端解析，DOCX / TXT / MD 前端直读</li>
+            <li>IndexedDB 本地持久化</li>
+            <li>素材按需解析，不占计算资源</li>
           </ul>
         </div>
       </div>
@@ -386,6 +392,7 @@ footer a:hover{text-decoration:underline}
       <!-- Step 3 -->
       <div class="workflow-item fade-in">
         <div class="workflow-media">
+          <img class="workflow-gif" src="images/step-3-node-popover.gif" alt="节点属性面板演示" decoding="async">
           <div class="placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/><circle cx="18" cy="16" r="2.2" fill="currentColor" opacity=".2"/></svg>
             <span class="file">step-3-node-popover.gif</span>
@@ -398,7 +405,7 @@ footer a:hover{text-decoration:underline}
           <p>点开任意节点弹出属性小框——<span class="highlight">绑定素材、写下写作要求、勾选是否引用已有内容</span>都在同一张卡片上完成。父节点素材自动继承到全部后代并置灰，子节点无需重复选择。</p>
           <ul>
             <li>勾选或拖入素材，父节点素材自动继承</li>
-            <li>写作要求多行输入，可留空使用默认规则</li>
+            <li>支持调整章节顺序，无需重新创建节点</li>
             <li>"引用已有内容修改"可开关，控制上下文范围</li>
             <li>三种内容状态：空白 / 已有文本 / 保护，一目了然</li>
           </ul>
@@ -408,6 +415,7 @@ footer a:hover{text-decoration:underline}
       <!-- Step 4 -->
       <div class="workflow-item fade-in">
         <div class="workflow-media">
+          <img class="workflow-gif" src="images/step-4-generate.gif" alt="AI 生成章节演示" decoding="async">
           <div class="placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             <span class="file">step-4-generate.gif</span>
@@ -416,8 +424,8 @@ footer a:hover{text-decoration:underline}
         </div>
         <div class="workflow-text">
           <span class="step-num">STEP 04</span>
-          <h3>AI 逐章节生成初稿 · 最多 3 路并发</h3>
-          <p>从根节点、父节点或叶子节点发起生成，AI 会拆成独立章节任务，<span class="highlight">最多 3 路并发</span>执行。每章使用自己的写作要求、继承素材和上下文；结果按 nodeId 精准写入对应章节，不会串位。</p>
+          <h3>AI 生成初稿 · 符合你的个性需求</h3>
+          <p>从根节点、父节点或叶子节点发起生成，AI 会拆成独立章节任务。每章使用自己的写作要求、继承素材和上下文；结果精准写入对应章节，不会串位。</p>
           <ul>
             <li>父章节写引导，叶子章节展开细节，规则自适应</li>
             <li>失败自动重试，可随时取消，已完成章节保留</li>
@@ -430,6 +438,7 @@ footer a:hover{text-decoration:underline}
       <!-- Step 5 -->
       <div class="workflow-item fade-in">
         <div class="workflow-media">
+          <img class="workflow-gif" src="images/step-5-selection-edit.gif" alt="选区编辑演示" decoding="async">
           <div class="placeholder">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13l2 2 4-4" stroke="currentColor"/></svg>
             <span class="file">step-5-selection-edit.gif</span>
@@ -505,7 +514,12 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.12 });
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.workflow-gif').forEach((img) => {
+  const markBroken = () => img.classList.add('is-broken')
+  if (img.complete && img.naturalWidth === 0) markBroken()
+  img.addEventListener('error', markBroken)
+})
 </script>
 </body>
 </html>
-

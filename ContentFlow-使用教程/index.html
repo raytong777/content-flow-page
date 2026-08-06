@@ -109,11 +109,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text"
 .step-list>li{counter-increment:step;position:relative;padding:14px 18px 14px 56px;margin-bottom:10px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius-sm);font-size:.98rem;line-height:1.65}
 .step-list>li::before{content:counter(step);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-bright));color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(126,20,255,.24)}
 
-/* Screenshot placeholder */
-.screenshot{margin:24px 0 8px;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#fff,var(--bg-tint));border:1px solid var(--card-border);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(126,20,255,.06);text-align:center;padding:24px}
-.screenshot svg{width:48px;height:48px;color:var(--accent);opacity:.5;margin-bottom:14px}
-.screenshot .file{font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.82rem;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:6px;margin-bottom:10px}
-.screenshot .caption{font-size:.9rem;color:var(--text-tertiary);max-width:340px;line-height:1.55}
+/* Screenshot */
+.screenshot{margin:24px 0 8px;border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,#fff,var(--bg-tint));border:1px solid var(--card-border);aspect-ratio:16/9;position:relative;box-shadow:0 8px 28px rgba(126,20,255,.06);text-align:center}
+.screenshot-media{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:linear-gradient(135deg,#fff,var(--bg-tint));display:block}
+.screenshot-media + .screenshot-placeholder{display:none}
+.screenshot-media.is-broken{display:none}
+.screenshot-media.is-broken + .screenshot-placeholder{display:flex}
+.screenshot-placeholder{position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.screenshot-placeholder svg{width:48px;height:48px;color:var(--accent);opacity:.5;margin-bottom:14px}
+.screenshot-placeholder .file{font-family:"SF Mono",Monaco,Consolas,monospace;font-size:.82rem;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:6px;margin-bottom:10px}
+.screenshot-placeholder .caption{font-size:.9rem;color:var(--text-tertiary);max-width:340px;line-height:1.55}
 
 /* Tip / Warn callout */
 .callout{display:flex;gap:14px;padding:16px 20px;border-radius:var(--radius-sm);margin:20px 0;border:1px solid;line-height:1.7;font-size:.96rem}
@@ -232,7 +237,7 @@ footer a:hover{text-decoration:underline}
       <option value="#ch5">05 · 节点属性小框</option>
       <option value="#ch6">06 · AI 生成与修改</option>
       <option value="#ch7">07 · 文档编辑与常用技巧</option>
-      <option value="#faq">08 · 常见问题 FAQ</option>
+      <option value="#faq">08 · 用户反馈与提升</option>
     </select>
   </div>
 
@@ -247,7 +252,7 @@ footer a:hover{text-decoration:underline}
       <li><a href="#ch5">节点属性小框</a></li>
       <li><a href="#ch6">AI 生成与修改</a></li>
       <li><a href="#ch7">文档编辑与常用技巧</a></li>
-      <li><a href="#faq">常见问题 FAQ</a></li>
+      <li><a href="#faq">用户反馈与提升</a></li>
     </ol>
   </aside>
 
@@ -268,14 +273,17 @@ footer a:hover{text-decoration:underline}
 
       <h3>三栏工作区一览</h3>
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="16" y1="4" x2="16" y2="20"/></svg>
-        <span class="file">screen-01-workspace.png</span>
-        <span class="caption">整体工作区示意：左侧资源管理器 / 中间主工作区 / 右侧 AI 助手</span>
+        <img class="screenshot-media" src="images/screen-01-workspace.png" alt="ContentFlow 三栏工作区">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="8" y1="4" x2="8" y2="20"/><line x1="16" y1="4" x2="16" y2="20"/></svg>
+          <span class="file">screen-01-workspace.png</span>
+          <span class="caption">整体工作区示意：左侧资源管理器 / 中间主工作区 / 右侧 AI 助手</span>
+        </div>
       </div>
       <ul class="plain">
         <li><strong>左侧：资源管理器</strong>（默认 220px，可折叠）——按分类展示素材、图片。</li>
         <li><strong>中间：主工作区</strong>——在<strong>思维导图</strong>和<strong>文档编辑器</strong>之间切换，通过顶部 Tab 或 <span class="key">Alt/Option</span> + <span class="key">1</span> 切换。</li>
-        <li><strong>右侧：AI 助手</strong>（默认 220px，可拖拽加宽到 560px）——对话、生成记录、选区修改结果都在这里。</li>
+        <li><strong>右侧：AI 助手</strong>——对话、生成记录、选区修改结果都在这里。</li>
         <li><strong>底部：状态栏</strong>——字数、最近保存时间、AI 健康状态指示灯。</li>
       </ul>
 
@@ -299,7 +307,7 @@ footer a:hover{text-decoration:underline}
       <div class="chapter-header">
         <span class="chapter-num">CHAPTER 02</span>
         <h2>创建项目与管理素材</h2>
-        <p class="chapter-lead">一个任务 = 一个项目 = 一个独立的资源与文档空间。数据全部保存在浏览器本地，不需要登录。</p>
+        <p class="chapter-lead">一个任务 = 一个项目 = 一个独立的资源与文档空间。数据全部保存在浏览器本地，不会上传到服务器。</p>
       </div>
 
       <h3>新建项目</h3>
@@ -333,26 +341,22 @@ footer a:hover{text-decoration:underline}
       <ul class="plain">
         <li>点击对应分类下的上传按钮，支持<strong>单次选择多个文件</strong>。</li>
         <li>每个分类会显示当前文件数量。</li>
-        <li>可以删除文件；文件的原始二进制和解析文本都保存在浏览器 IndexedDB。</li>
+        <li>支持删除文件。</li>
         <li><span class="em-accent">拖拽</span>资源管理器中的文件到思维导图节点上，即可完成绑定。</li>
       </ul>
 
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
-        <span class="file">screen-02-upload.gif</span>
-        <span class="caption">分类上传素材，并拖拽到导图节点完成绑定</span>
+        <img class="screenshot-media" src="images/screen-02-upload.gif" alt="上传素材并拖拽绑定演示">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+          <span class="file">screen-02-upload.gif</span>
+          <span class="caption">分类上传素材，并拖拽到导图节点完成绑定</span>
+        </div>
       </div>
 
-      <h3>素材是怎么被 AI 读到的</h3>
-      <p>素材<strong>首次被使用时才解析</strong>成纯文本，不会在上传阶段阻塞你。解析结果会缓存到文件记录里，后续 AI 生成直接使用缓存，不重复解析。</p>
-      <ul class="plain">
-        <li><strong>TXT / Markdown：</strong>前端直接读取。</li>
-        <li><strong>DOCX：</strong>前端使用 Mammoth 提取纯文本。</li>
-        <li><strong>PDF：</strong>发送到轻后端，由 <code>pdf-parse</code> 解析。</li>
-      </ul>
       <div class="callout callout-warn">
         <div class="cico">!</div>
-        <div><strong>注意：</strong>不支持的格式或空文件会在生成时返回解析错误，<strong>不会作为空素材</strong>传给 AI，避免 AI 凭空发挥。</div>
+        <div><strong>注意：</strong>不支持的格式或空文件会在生成时返回解析错误，<strong>不会作为空素材</strong>传给 AI</div>
       </div>
     </section>
 
@@ -365,7 +369,6 @@ footer a:hover{text-decoration:underline}
       </div>
 
       <h3>节点的基本操作</h3>
-      <p>ContentFlow 为每个节点分配了<strong>稳定的 nodeId</strong>——即使两个同名节点，操作也不会混淆。</p>
       <table>
         <thead><tr><th style="width:170px">操作</th><th>效果</th></tr></thead>
         <tbody>
@@ -396,17 +399,20 @@ footer a:hover{text-decoration:underline}
         <li><strong>新增节点：</strong>文档中生成对应空章节，不影响其他章节正文。</li>
         <li><strong>重命名节点：</strong>标题更新，正文保留。</li>
         <li><strong>移动节点：</strong>正文跟随节点一起移动。</li>
-        <li><strong>删除节点：</strong>对应章节从文档中移除（有二次确认）。</li>
+        <li><strong>删除节点：</strong>对应章节从文档中移除。</li>
       </ul>
       <div class="callout callout-info">
         <div class="cico">i</div>
-        <div>同步方向以<strong>导图 → 文档</strong>为主。所有变更都会立即写入 IndexedDB，刷新页面不丢结构。</div>
+        <div>同步方向以<strong>导图 → 文档</strong>为主；刷新页面不丢结构。</div>
       </div>
 
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M9.5 11L7 7M9.5 13L7 17M14.5 11l2.5-4M14.5 13l2.5 4"/></svg>
-        <span class="file">screen-03-mindmap.gif</span>
-        <span class="caption">思维导图节点增删改与文档标题的同步</span>
+        <img class="screenshot-media" src="images/screen-03-mindmap.gif" alt="思维导图操作演示">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M9.5 11L7 7M9.5 13L7 17M14.5 11l2.5-4M14.5 13l2.5 4"/></svg>
+          <span class="file">screen-03-mindmap.gif</span>
+          <span class="caption">思维导图节点增删改与文档标题的同步</span>
+        </div>
       </div>
     </section>
 
@@ -426,26 +432,16 @@ footer a:hover{text-decoration:underline}
       </ul>
 
       <h3>入口</h3>
-      <p>切到思维导图视图，工具栏「帮助」按钮右边就是<strong>「导入模版」</strong>按钮（紫色）。当前项目未选择时按钮为禁用。</p>
+      <p>切到思维导图视图，工具栏「帮助」按钮右边就是<strong>「导入模版」</strong>按钮。当前项目未选择时按钮为禁用。</p>
 
       <h3>解析流程</h3>
       <ol class="step-list">
         <li><strong>上传文件</strong>：点击或拖入 1 个文件，支持 MD / DOC / DOCX / PDF。</li>
-        <li><strong>自动解析</strong>：
-          <ul class="plain" style="margin-top:6px">
-            <li>MD：前端正则秒级解析。</li>
-            <li>DOCX / DOC：前端 Mammoth 转 HTML 后由 <strong>AI 分析结构</strong>。</li>
-            <li>PDF：后端抽取纯文本后由 <strong>AI 分析结构</strong>。</li>
-          </ul>
-        </li>
-        <li><strong>预览编辑</strong>：查看 AI 解析出的章节树，可以任意<span class="em-accent">增删改层级、重命名、勾选是否连正文一起导入</span>。</li>
+        <li><strong>自动解析</strong>：AI 解析出章节树，自动计算章节层级。</li>
+        <li><strong>预览编辑</strong>：支持任意<span class="em-accent">增删改层级、重命名、勾选是否连正文一起导入</span>。</li>
         <li><strong>开始导入</strong>：确认后落到思维导图和文档；勾选了正文的章节会覆盖到对应位置。</li>
       </ol>
 
-      <div class="callout callout-info">
-        <div class="cico">i</div>
-        <div>导入时 <strong>文件名会作为最外层 H1</strong>，AI 识别到的所有层级顺延一级——这样你导入多份模版时结构一目了然。</div>
-      </div>
 
       <h3>预览面板可以做什么</h3>
       <table>
@@ -460,9 +456,12 @@ footer a:hover{text-decoration:underline}
       </table>
 
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 13h8M8 17h6"/></svg>
-        <span class="file">screen-04-import-template.png</span>
-        <span class="caption">导入模版：上传文件 → AI 解析 → 预览编辑 → 一键落到工作区</span>
+        <img class="screenshot-media" src="images/screen-04-import-template.gif" alt="导入模版演示">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M8 13h8M8 17h6"/></svg>
+          <span class="file">screen-04-import-template.gif</span>
+          <span class="caption">导入模版：上传文件 → AI 解析 → 预览编辑 → 一键落到工作区</span>
+        </div>
       </div>
 
       <h3>与当前文档的关系</h3>
@@ -498,9 +497,12 @@ footer a:hover{text-decoration:underline}
       </ol>
 
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/><circle cx="18" cy="16" r="2.2" fill="currentColor" opacity=".2"/></svg>
-        <span class="file">screen-04-node-popover.png</span>
-        <span class="caption">节点属性小框的完整界面</span>
+        <img class="screenshot-media" src="images/screen-04-node-popover.png" alt="节点属性小框界面">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/><circle cx="18" cy="16" r="2.2" fill="currentColor" opacity=".2"/></svg>
+          <span class="file">screen-04-node-popover.png</span>
+          <span class="caption">节点属性小框的完整界面</span>
+        </div>
       </div>
 
       <h3>绑定素材：勾选、拖入、自动继承</h3>
@@ -516,7 +518,7 @@ footer a:hover{text-decoration:underline}
         <div><strong>实用技巧：</strong>把整份文档共用的素材（如总纲、术语表）绑定到<strong>根节点</strong>，全文生成时自动传给每一章。分章节独有的素材再绑到对应父节点/叶子节点即可。</div>
       </div>
 
-      <h3>写作要求：可以省略，会有默认规则</h3>
+      <h3>写作要求：单独配置章节要求，个性化设计</h3>
       <p>每个节点单独保存自己的写作要求。批量生成时<strong>不要求你为所有节点预先配置</strong>。若某节点没写要求，AI 会用以下默认规则：</p>
       <ul class="plain">
         <li><strong>有子节点的章节：</strong>生成章节引导和结构概述，不提前展开子章节细节。</li>
@@ -562,26 +564,19 @@ footer a:hover{text-decoration:underline}
         </tbody>
       </table>
 
-      <h3>并发策略：最多 3 路并发</h3>
-      <ul class="plain">
-        <li>一次父节点/根节点生成会拆成多个<strong>独立章节任务</strong>。</li>
-        <li>每个任务使用<strong>该节点自己的标题、写作要求、继承素材和上下文</strong>。</li>
-        <li>同时最多运行 <strong>3 个</strong>章节生成请求，在等待时间和服务压力之间取平衡。</li>
-        <li>素材<strong>统一解析和去重</strong>，避免每个章节重复解析同一份文件。</li>
-        <li>单个章节请求失败自动等待约 600ms <strong>重试一次</strong>。</li>
-        <li>生成过程中可<strong>随时取消</strong>，已完成章节保留，未完成任务停止。</li>
-      </ul>
-
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        <span class="file">screen-05-batch-generate.gif</span>
-        <span class="caption">从根节点一键生成全文，3 路并发实时展示</span>
+        <img class="screenshot-media" src="images/screen-05-batch-generate.gif" alt="批量生成章节演示">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span class="file">screen-05-batch-generate.gif</span>
+          <span class="caption">从根节点一键生成全文，3 路并发实时展示</span>
+        </div>
       </div>
 
-      <h3>标题不会被 AI 改动</h3>
+      <h3>生成规则</h3>
       <ul class="plain">
         <li>AI <strong>只生成章节正文</strong>，不允许重复标题或返回新的 Markdown 标题结构。</li>
-        <li>生成结果按 <code>nodeId</code> <strong>精确覆盖</strong>对应章节正文，子节点内容不会被错写到父节点。</li>
+        <li>生成结果<strong>精确覆盖</strong>对应章节正文。</li>
         <li>写入前会二次比较：如果该章节在等待期间被你或其他操作修改过，<strong>会跳过覆盖并报告失败</strong>，保护你刚完成的编辑。</li>
       </ul>
 
@@ -611,13 +606,15 @@ footer a:hover{text-decoration:underline}
       </ol>
 
       <div class="screenshot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13l2 2 4-4"/></svg>
-        <span class="file">screen-06-selection-edit.gif</span>
-        <span class="caption">选取原文 → 提要求 → AI 直接改写覆盖选区</span>
+        <img class="screenshot-media" src="images/screen-06-selection-edit.gif" alt="选区精准修改演示">
+        <div class="screenshot-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13l2 2 4-4"/></svg>
+          <span class="file">screen-06-selection-edit.gif</span>
+          <span class="caption">选取原文 → 提要求 → AI 直接改写覆盖选区</span>
+        </div>
       </div>
 
       <h4>每条修改都会给出结构化说明</h4>
-      <p>AI 返回的每个修改项包含：<strong>问题类型 · 修改前 · 修改后 · 修改原因</strong>。问题类型优先归类为：</p>
       <ul class="plain">
         <li>表达问题 · 结构问题 · 内容缺失</li>
         <li>术语或事实问题 · 格式问题 · 其他问题</li>
@@ -627,9 +624,8 @@ footer a:hover{text-decoration:underline}
       <ul class="plain">
         <li>修改完成后，AI 面板出现<strong>修改结果卡片</strong>，可展开查看各问题类型的简短总结。</li>
         <li>点击<strong>「返回」</strong>按钮恢复该次修改前的选区内容，成功后显示"已返回修改前内容"。</li>
-        <li>返回按钮<strong>不会禁用</strong>，可反复恢复到修改前版本。</li>
+        <li>返回按钮<strong>支持重复使用</strong>，可反复恢复到修改前版本。</li>
         <li>点击<strong>「重新应用」</strong>再次写入修改后的版本。</li>
-        <li>当前选区位置会随后续编辑器事务映射，<strong>降低前文变化后恢复到错误位置的风险</strong>。</li>
       </ul>
       <div class="callout callout-tip">
         <div class="cico">💡</div>
@@ -641,7 +637,6 @@ footer a:hover{text-decoration:underline}
       <ul class="plain">
         <li>AI 回答只显示在右侧对话框中，<strong>不自动改写文档</strong>。</li>
         <li>请求携带当前导图结构和文档内容作为上下文。</li>
-        <li>使用 SSE 流式显示，支持中途停止。</li>
         <li>可以问结构性问题："这篇文档整体结构合理吗？" "第二章和第三章有没有内容重复？"</li>
       </ul>
     </section>
@@ -654,13 +649,6 @@ footer a:hover{text-decoration:underline}
         <p class="chapter-lead">主工作区里除了 AI 相关能力，还有一些编辑细节可以让你写得更顺。</p>
       </div>
 
-      <h3>关联标题保护</h3>
-      <ul class="plain">
-        <li>与导图节点关联的文档标题显示为<strong>蓝色加粗</strong>，左侧显示自动计算的层级编号。</li>
-        <li>关联标题可以<strong>修改文字</strong>，改动会同步回思维导图。</li>
-        <li>关联标题<strong>不能被删除、合并或转换为普通段落</strong>，避免破坏导图和文档的映射。</li>
-        <li>标题被清空时会显示提示，离开标题后恢复最后一个有效标题。</li>
-      </ul>
 
       <h3>标题悬浮操作条</h3>
       <p>操作条只在<strong>鼠标悬浮标题左侧层级编号</strong>时出现，避免选择或复制标题时的误触。当前提供：</p>
@@ -685,7 +673,7 @@ footer a:hover{text-decoration:underline}
 
       <h3>自动保存与状态栏</h3>
       <ul class="plain">
-        <li>正文更新采用<strong>防抖自动保存</strong>；切换视图不会丢失待保存内容。</li>
+        <li>正文更新采用<strong>自动保存</strong>；切换视图不会丢失待保存内容。</li>
         <li>状态栏显示：当前文档字数 · 最近自动保存时间 · AI 后端健康状态（每 30 秒检查一次）。</li>
         <li>AI 状态显示"AI 可用"、"AI 不可用"或"检测中"三种。</li>
       </ul>
@@ -714,15 +702,10 @@ footer a:hover{text-decoration:underline}
     <section class="chapter faq" id="faq">
       <div class="chapter-header">
         <span class="chapter-num">CHAPTER 08</span>
-        <h2>常见问题 FAQ</h2>
-        <p class="chapter-lead">使用过程中最常被问到的问题，都收集在这里。</p>
+        <h2>用户反馈与提升</h2>
+        <p class="chapter-lead">用户使用后的反馈，都收集在这里。</p>
       </div>
 
-      <details>
-        <summary>我的数据存在哪里？会不会丢？</summary>
-        <p>所有数据保存在<strong>浏览器 IndexedDB</strong>——包括项目、文件二进制、解析文本缓存、导图、文档、节点元数据、AI 对话记录。刷新页面、关闭浏览器都不会丢失。</p>
-        <p>但请注意：<strong>清理浏览器数据、切换浏览器/设备</strong>会导致数据不可见，因为它们并没有上传到云端。目前不支持账号体系和云端同步。</p>
-      </details>
 
       <details>
         <summary>可以让 AI 从已有文档一键搭骨架吗？</summary>
@@ -734,14 +717,10 @@ footer a:hover{text-decoration:underline}
         </ul>
         <p>详见 <a href="#ch4"><strong>章节 04</strong></a>。</p>
       </details>
-      <details>
-        <summary>能否云同步 / 多设备使用？</summary>
-        <p>当前版本<strong>不支持</strong>。ContentFlow 定位是无需登录的本地工具，数据留在你自己的浏览器里。多设备协作不在当前开发范围内。</p>
-      </details>
 
       <details>
         <summary>导出 Word / PDF 什么时候上线？</summary>
-        <p>导出 Word (.docx) 已在计划中，采用"所见即所得"的转换逻辑（Markdown → AST → docx）——你在编辑器里看到什么，导出就是什么。PDF 导出会在 Word 导出之后跟进。</p>
+        <p>导出 Word (.docx) 已在计划中；我们希望你在编辑器里看到什么，导出就是什么。PDF 导出会在 Word 导出之后跟进。</p>
       </details>
 
       <details>
@@ -755,8 +734,8 @@ footer a:hover{text-decoration:underline}
 
       <details>
         <summary>生成过程中失败了怎么办？</summary>
-        <p>单个章节请求失败会<strong>自动等待约 600ms 重试一次</strong>。如果重试后依然失败，工作流会显示失败数，其他成功的章节不受影响。你可以在失败节点上再次点击"生成内容"手动重试。</p>
-        <p>如果状态栏显示"AI 不可用"，通常是后端未启动或网络问题——每 30 秒会自动重新检查。</p>
+        <p>单个章节请求失败会<strong>自动等待一段时间后再次发送请求</strong>。如果重试后依然失败，工作流会显示失败，其他成功的章节不受影响。你可以在失败节点上再次点击"生成内容"手动重试。</p>
+        <p>如果状态栏显示"AI 不可用"，通常是后端未启动或网络问题。</p>
       </details>
 
       <details>
@@ -776,10 +755,6 @@ footer a:hover{text-decoration:underline}
         <p>生成时会合并该节点<strong>所有祖先和自身</strong>绑定的素材，自动去重后传给 AI。</p>
       </details>
 
-      <details>
-        <summary>可以同时选取多段不连续的原文让 AI 修改吗？</summary>
-        <p><strong>暂不支持。</strong>当前选取原文修改只支持一个连续选区。多不连续选区的场景不在当前开发范围。</p>
-      </details>
 
       <details>
         <summary>思维导图节点太多，怎么快速定位？</summary>
@@ -825,6 +800,12 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-40% 0px -55% 0px' });
 
 chapters.forEach(c => observer.observe(c));
+
+document.querySelectorAll('.screenshot-media').forEach((img) => {
+  const markBroken = () => img.classList.add('is-broken');
+  if (img.complete && img.naturalWidth === 0) markBroken();
+  img.addEventListener('error', markBroken);
+});
 </script>
 </body>
 </html>

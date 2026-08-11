@@ -140,6 +140,45 @@ section{padding:120px 40px}
 .workflow-text li{font-size:.94rem;color:var(--text-secondary);padding:6px 0 6px 22px;position:relative;line-height:1.65}
 .workflow-text li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.6}
 
+/* ===== Iteration timeline ===== */
+.iter-grid{display:flex;flex-direction:column;gap:16px;margin-top:48px}
+.iter-card{position:relative;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden;transition:border-color .25s,box-shadow .25s;box-shadow:0 2px 10px rgba(126,20,255,.04)}
+.iter-card::before{content:'';position:absolute;top:0;bottom:0;left:0;width:4px;background:linear-gradient(180deg,var(--accent),var(--accent-cyan));opacity:.7;transition:opacity .25s}
+.iter-card:hover{border-color:rgba(126,20,255,.28);box-shadow:0 10px 30px rgba(126,20,255,.09)}
+.iter-card:hover::before{opacity:1}
+.iter-card[open]{border-color:rgba(126,20,255,.35);box-shadow:0 14px 40px rgba(126,20,255,.14)}
+.iter-card[open]::before{opacity:1;width:5px}
+.iter-summary{list-style:none;cursor:pointer;padding:22px 28px 22px 32px;display:flex;align-items:center;gap:22px;position:relative}
+.iter-summary::-webkit-details-marker{display:none}
+.iter-summary::marker{display:none}
+.iter-summary:hover{background:rgba(126,20,255,.015)}
+.iter-badge{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:56px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-bright));color:#fff;font-weight:700;font-size:1rem;letter-spacing:.04em;font-family:"SF Mono",Monaco,Consolas,monospace;box-shadow:0 6px 16px rgba(126,20,255,.28)}
+.iter-summary-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.iter-summary h3{font-size:1.2rem;font-weight:700;letter-spacing:-.015em;color:var(--text);margin:0;line-height:1.3}
+.iter-summary .iter-sub{font-size:.88rem;color:var(--text-tertiary);font-weight:500;letter-spacing:.01em}
+.iter-status{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.iter-status-done{background:#dcfce7;color:#166534}
+.iter-status-doing{background:#fef3c7;color:#92400e}
+.iter-status-doing::before{content:'';width:6px;height:6px;border-radius:50%;background:#f59e0b;animation:iter-pulse 1.6s ease-in-out infinite}
+@keyframes iter-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.iter-chev{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;transition:transform .3s,background .2s;font-size:.95rem;font-weight:700}
+.iter-card[open] .iter-chev{transform:rotate(180deg);background:var(--accent);color:#fff}
+.iter-detail{padding:4px 32px 30px 32px;animation:iter-fade .4s ease}
+@keyframes iter-fade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.iter-detail-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(126,20,255,.18),transparent);margin-bottom:22px}
+.iter-lead{font-size:.98rem;color:var(--text-secondary);line-height:1.8;margin:0 0 20px;padding:16px 20px;background:linear-gradient(135deg,rgba(126,20,255,.045),rgba(71,191,255,.045));border-radius:var(--radius-sm);border-left:3px solid var(--accent)}
+.iter-lead strong{color:var(--text);font-weight:600}
+.iter-highlights{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:14px 0 4px}
+.iter-hl{padding:18px 18px;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius-sm);transition:all .2s;position:relative;overflow:hidden}
+.iter-hl:hover{border-color:rgba(126,20,255,.28);transform:translateY(-2px);box-shadow:0 8px 24px rgba(126,20,255,.08)}
+.iter-hl-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent-light),#fff);display:inline-flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:10px}
+.iter-hl h4{font-size:.98rem;font-weight:700;margin-bottom:6px;color:var(--text);letter-spacing:-.005em}
+.iter-hl p{font-size:.88rem;color:var(--text-secondary);line-height:1.65;margin:0}
+.iter-points{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px 24px}
+.iter-points li{position:relative;padding:8px 0 8px 22px;font-size:.94rem;color:var(--text-secondary);line-height:1.7}
+.iter-points li::before{content:'';position:absolute;left:0;top:16px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.55;box-shadow:0 0 0 3px rgba(126,20,255,.1)}
+.iter-points li strong{color:var(--text);font-weight:600}
+
 /* ===== Author ===== */
 .author-section{background:linear-gradient(180deg,transparent,var(--bg-tint) 40%)}
 .author-card{display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:stretch;background:#fff;border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden;box-shadow:0 12px 40px rgba(126,20,255,.08);margin-top:36px}
@@ -187,6 +226,12 @@ footer a:hover{text-decoration:underline}
   .pain-solve::before{display:none}
   .workflow-item{grid-template-columns:1fr;gap:28px}
   .workflow-item:nth-child(even){direction:ltr}
+  .iter-grid{gap:12px}
+  .iter-summary{padding:18px 20px 18px 22px;gap:14px;flex-wrap:wrap}
+  .iter-summary h3{font-size:1.05rem}
+  .iter-summary .iter-sub{font-size:.82rem}
+  .iter-detail{padding:4px 22px 24px 22px}
+  .iter-points{grid-template-columns:1fr}
   .author-card{grid-template-columns:1fr}
   .author-photo{min-height:260px}
   .author-info{padding:24px}
@@ -215,7 +260,8 @@ footer a:hover{text-decoration:underline}
       <a href="#pain">主要痛点</a>
       <a href="#features">核心能力</a>
       <a href="#workflow">工作流</a>
-      <a href="https://contentflowdoc.netlify.app/" class="nav-cta">使用教程</a>
+      <a href="#iteration">迭代优化</a>
+      <a href="../ContentFlow-使用教程/index.html" class="nav-cta">使用教程</a>
       <a href="https://raycontentflow.netlify.app/" target="_blank" rel="noopener" class="nav-cta">进入网页版 →</a>
     </div>
   </div>
@@ -450,13 +496,134 @@ footer a:hover{text-decoration:underline}
           <h3>AI 对话润色 · 修改直接落到文档</h3>
           <p>初稿之上，在文档中框选一段内容，AI 输入框上方会出现<span class="highlight">「选取原文」引用卡片</span>。写下你的修改要求，AI 返回改写后的完整文本，<span class="highlight">直接覆盖选区</span>——无需复制、无需搬运，参考了 Claude Code 的交互思路。</p>
           <ul>
-            <li>结构化输出：问题类型 · 修改前 · 修改后 · 原因</li>
-            <li>修改前/修改后版本一键切换，随时回退</li>
+            <li>意图自动识别：同一输入框，讨论就回答、修改才动文档</li>
+            <li>修改前/修改后一键切换，随时回退</li>
             <li>选区位置随后续编辑映射，恢复不错位</li>
             <li>AI 面板保留每次修改的卡片，与生成记录按时间统一排列</li>
           </ul>
         </div>
       </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== Iteration ===== -->
+<section id="iteration" style="background:var(--bg-tint)" class="fade-in">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-label">迭代优化</span>
+      <h2 class="section-title">从"骨架能立"到"入门零门槛"</h2>
+      <p class="section-desc">产品分四步走，一步一个脚印——先把非 AI 底盘打牢，再让 AI 会写、写得好，再整体提升用户使用体验。</p>
+    </div>
+
+    <div class="iter-grid">
+
+      <!-- V1 -->
+      <details class="iter-card fade-in">
+        <summary class="iter-summary">
+          <span class="iter-badge">V1</span>
+          <div class="iter-summary-body">
+            <h3>项目框架搭建</h3>
+            <span class="iter-sub">搭建项目骨架，保证想法能跑</span>
+          </div>
+          <span class="iter-status iter-status-done">已上线</span>
+          <span class="iter-chev">↓</span>
+        </summary>
+        <div class="iter-detail">
+          <div class="iter-detail-divider"></div>
+          <p class="iter-lead">先把"文档主界面 + 思维导图 + 项目资源"这套骨架打牢，作为后续所有 AI 能力的载体。</p>
+          <ul class="iter-points">
+            <li><strong>三栏工作区：</strong>资源管理器 · 主工作区（导图/文档双 Tab）· AI 助手，浅色/深色主题切换</li>
+            <li><strong>项目制资源管理：</strong>每个项目独立保存文件、导图、文档、节点属性和对话记录，本地持久化</li>
+            <li><strong>思维导图搭骨架：</strong>可编辑思维导图，同名节点也不会混淆</li>
+            <li><strong>导图 ↔ 文档结构双向同步：</strong>节点增删改移动，文档标题实时跟随</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- V2 -->
+      <details class="iter-card fade-in">
+        <summary class="iter-summary">
+          <span class="iter-badge">V2</span>
+          <div class="iter-summary-body">
+            <h3>让 AI 更快、更准、更稳</h3>
+            <span class="iter-sub">AI 生成能力落地</span>
+          </div>
+          <span class="iter-status iter-status-done">已上线</span>
+          <span class="iter-chev">↓</span>
+        </summary>
+        <div class="iter-detail">
+          <div class="iter-detail-divider"></div>
+          <p class="iter-lead">AI 生成能力（章节生成 + AI 对话）的完整落地与三向优化——产品从<strong>"能写"</strong>到<strong>"写得好"</strong>的关键跃迁。</p>
+          <div class="iter-highlights">
+            <div class="iter-hl">
+              <div class="iter-hl-icon">⚡</div>
+              <h4>更快</h4>
+              <p>切换到更快的 AI 底座 + 全链路优化，章节生成、对话回复都是<strong>边写边显示</strong>，几乎无等待感。</p>
+            </div>
+            <div class="iter-hl">
+              <div class="iter-hl-icon">🎯</div>
+              <h4>更准</h4>
+              <p>素材节点绑定 + 自动向后代继承；写入时按预设结构精确覆盖对应章节，AI 只写正文、不动骨架、不改标题。</p>
+            </div>
+            <div class="iter-hl">
+              <div class="iter-hl-icon">🛡️</div>
+              <h4>更稳</h4>
+              <p>AI 对话架构重构——意图识别能力提升，同一输入框讨论就回答、修改就动手，多轮对话不再翻车。</p>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- V3 -->
+      <details class="iter-card fade-in">
+        <summary class="iter-summary">
+          <span class="iter-badge">V3</span>
+          <div class="iter-summary-body">
+            <h3>提升产品每一环的使用体验</h3>
+            <span class="iter-sub">让创意无感落地</span>
+          </div>
+          <span class="iter-status iter-status-done">已上线</span>
+          <span class="iter-chev">↓</span>
+        </summary>
+        <div class="iter-detail">
+          <div class="iter-detail-divider"></div>
+          <p class="iter-lead">AI 能写之后，怎么让用户<strong>始终掌舵</strong>——防止误改、用起来更趁手。</p>
+          <ul class="iter-points">
+            <li><strong>保护状态 + 关联标题保护：</strong>手动改过的章节自动进入保护，批量生成会自动跳过；导图关联的标题不可被误删、误合并，始终与骨架对齐</li>
+            <li><strong>节点属性小框重排：</strong>写作要求改为对话式输入，生成按钮就近放置，一张卡片讲清"写什么、用什么、怎么写"</li>
+            <li><strong>AI 助手宽度可调：</strong>拖拽或键盘微调，写长内容时不再挤成一列</li>
+            <li><strong>标题悬浮操作条：</strong>一键复制章节正文，避免选择文字时的误触</li>
+            <li><strong>生成记录并入对话流：</strong>章节生成与普通对话按时间统一排序，随时点击"查看文档"精确跳章节</li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- V4 -->
+      <details class="iter-card fade-in">
+        <summary class="iter-summary">
+          <span class="iter-badge">V4</span>
+          <div class="iter-summary-body">
+            <h3>让入门零门槛</h3>
+            <span class="iter-sub">提供快速体验完整流程的新路径</span>
+          </div>
+          <span class="iter-status iter-status-doing">Roadmap · 开发中</span>
+          <span class="iter-chev">↓</span>
+        </summary>
+        <div class="iter-detail">
+          <div class="iter-detail-divider"></div>
+          <p class="iter-lead">让新手也能<strong>三步出稿</strong>：一句话描述目标 → AI 自动搭骨架 → 一键成文。想精细控制的人再手动调。</p>
+          <ul class="iter-points">
+            <li><strong>⭐ 一键成文快速通道：</strong>上传素材 + 一句话目标 → AI 自动生成思维导图 + 自动绑定素材 + 一键全文生成</li>
+            <li><strong>Word / PDF 导出：</strong>所见即所得——编辑器里看到什么，导出就是什么</li>
+            <li><strong>【已完成】文档视图的章节树：</strong>切到文档时左侧变成章节树，点标题精确跳转</li>
+            <li><strong>标题悬浮四按钮接通：</strong>优化表达 · 精简内容 · 丰富内容 · 继续写，一键完成局部微调</li>
+            <li><strong>图片 OCR + 参与生成：</strong>让图片素材也能被 AI 读到</li>
+            <li>项目支持删除、量化字数目标校验、部分格式解析错误修复等日常打磨</li>
+          </ul>
+        </div>
+      </details>
 
     </div>
   </div>
